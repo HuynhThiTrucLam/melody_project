@@ -1,8 +1,8 @@
 class AppRoutes {
+  AppRoutes._();
+
   static const String introduction = '/introduction';
   static const String direction = '/direction';
-  static const String home = '/home';
-  // static const String login = '/login';
-  // static const String profile = '/profile';
-  // static const String settings = '/settings';
+  static const String signIn = '/sign-in';
+  static const String phoneSignIn = '/phone-sign-in';
 }

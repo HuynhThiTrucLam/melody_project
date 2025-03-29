@@ -1,7 +1,15 @@
+import 'package:MELODY/views/screens/Sign_in_screen/sign_in_sceen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
+
+void _handleClickOnAlreadyHaveAccount(BuildContext context) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => const SignInScreen()),
+  );
+}
 
 class DirectionScreen extends StatelessWidget {
   const DirectionScreen({super.key});
@@ -62,7 +70,7 @@ class DirectionScreen extends StatelessWidget {
               CustomButton(
                 hintText: "Tôi đã có tài khoản",
                 isPrimary: true,
-                onPressed: () => {},
+                onPressed: () => _handleClickOnAlreadyHaveAccount(context),
               ),
               const SizedBox(height: 16),
 

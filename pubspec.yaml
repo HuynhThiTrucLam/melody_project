@@ -66,6 +66,13 @@ flutter:
     - assets/icons/slider2.svg
     - assets/icons/slider3.svg
     - assets/icons/icon_app.svg
+    - assets/icons/visibility_eye.svg
+    - assets/icons/visibility_off_eye.svg
+    - assets/icons/phone_auth.svg
+    - assets/icons/goggle_auth.png
+    - assets/icons/phone_locale/vietname.svg
+    - assets/icons/illustrator/sign_in_with_phone.svg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
