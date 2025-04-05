@@ -1,0 +1,1 @@
+enum OtpType { signIn, resetPassword }

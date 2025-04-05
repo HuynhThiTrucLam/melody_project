@@ -1,4 +1,5 @@
 import 'package:MELODY/core/models/country_code.dart';
+import 'package:MELODY/core/models/otp_type.dart';
 import 'package:MELODY/core/services/country_code_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
@@ -10,18 +11,18 @@ import 'package:MELODY/views/widgets/custom_input/custom_phone_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// A screen that allows users to sign in to the MELODY app using their phone number.
+/// A screen that allows users to recover their password using a phone number.
 ///
-/// This screen includes a country code selector, phone number input field,
-/// and a continue button to proceed to verification.
-class PhoneSignInScreen extends StatefulWidget {
-  const PhoneSignInScreen({super.key});
+/// This screen provides an input field for users to enter their phone number,
+/// which will be used to send a verification code for password reset.
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<PhoneSignInScreen> createState() => _PhoneSignInScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _phoneController = TextEditingController();
   List<CountryCode> _countryCodes = [];
   CountryCode? _selectedCountry;
@@ -79,13 +80,15 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
               vertical: 16.0,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buildHeader(),
                 const SizedBox(height: 14),
                 _buildInstructionText(),
                 const SizedBox(height: 24),
                 _buildPhoneInput(),
+                const SizedBox(height: 16),
+                _buildEmailInput(),
                 const SizedBox(height: 16),
                 _buildContinueButton(),
               ],
@@ -141,10 +144,14 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
         Center(
           child: Column(
             children: [
-              SvgPicture.asset(ImageTheme.illustratorSignInWithPhone),
+              SvgPicture.asset(
+                ImageTheme.illustratorSignInWithPhone,
+                width: 280,
+                height: 280,
+              ),
               const SizedBox(height: 24),
               Text(
-                'Đăng nhập',
+                'Quên mật khẩu',
                 style: LightTextTheme.headding1.copyWith(
                   color: LightColorTheme.black,
                 ),
@@ -158,7 +165,7 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
 
   Widget _buildInstructionText() {
     return Text(
-      'Chúng tôi sẽ gửi cho bạn mã xác nhận đăng nhập qua số điện thoại bên dưới.',
+      'Nhập số điện thoại để đặt lại mật khẩu.',
       style: LightTextTheme.paragraph2.copyWith(color: LightColorTheme.grey),
       textAlign: TextAlign.center,
     );
@@ -218,16 +225,18 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
         duration: Duration(seconds: 2),
       ),
     );
-    
+
     // Navigate to verification code screen with animation
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => VerificationScreen(
-            phoneNumber: _phoneController.text,
-            countryCode: _selectedCountry!.dialCode,
-          ),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => VerificationScreen(
+                phoneNumber: _phoneController.text,
+                countryCode: _selectedCountry!.dialCode,
+                otpType: OtpType.resetPassword,
+              ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;
@@ -243,6 +252,31 @@ class _PhoneSignInScreenState extends State<PhoneSignInScreen> {
         ),
       );
     });
+  }
+
+  Widget _buildEmailInput() {
+    return TextButton(
+      onPressed: () {},
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Đặt lại mật khẩu bằng',
+            style: LightTextTheme.paragraph2.copyWith(
+              color: const Color(0xFF5E5A5A),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Email?',
+            style: LightTextTheme.paragraph2.copyWith(
+              color: const Color(0xFF111111),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildContinueButton() {

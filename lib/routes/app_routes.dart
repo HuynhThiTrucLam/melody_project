@@ -5,4 +5,5 @@ class AppRoutes {
   static const String direction = '/direction';
   static const String signIn = '/sign-in';
   static const String phoneSignIn = '/phone-sign-in';
+  static const String verificationCode = '/verification-code';
 }

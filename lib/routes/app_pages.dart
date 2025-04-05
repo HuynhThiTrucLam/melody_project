@@ -16,6 +16,8 @@ class AppPages {
         return MaterialPageRoute(builder: (_) => const SignInScreen());
       case AppRoutes.phoneSignIn:
         return MaterialPageRoute(builder: (_) => const PhoneSignInScreen());
+      // case AppRoutes.verificationCode:
+      //   return MaterialPageRoute(builder: (_) => const VerificationScreen());
       default:
         return MaterialPageRoute(
           builder:

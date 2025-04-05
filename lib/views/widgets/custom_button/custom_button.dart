@@ -6,11 +6,13 @@ class CustomButton extends StatefulWidget {
   final String hintText;
   final bool isPrimary;
   final void Function()? onPressed;
+  final bool? isLoading;
 
   const CustomButton({
     required this.hintText,
     this.isPrimary = true,
     this.onPressed,
+    this.isLoading,
     super.key,
   });
 
@@ -21,8 +23,10 @@ class CustomButton extends StatefulWidget {
 class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
+    final bool isLoading = widget.isLoading ?? false;
+    
     return ElevatedButton(
-      onPressed: widget.onPressed,
+      onPressed: isLoading ? null : widget.onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor:
             widget.isPrimary ? LightColorTheme.mainColor : Colors.white,
@@ -35,21 +39,38 @@ class _CustomButtonState extends State<CustomButton> {
             widget.isPrimary
                 ? null
                 : BorderSide(color: LightColorTheme.black, width: 1),
+        disabledBackgroundColor: widget.isPrimary 
+            ? LightColorTheme.mainColor.withOpacity(0.7) 
+            : Colors.grey.shade200,
+        disabledForegroundColor: widget.isPrimary 
+            ? Colors.white.withOpacity(0.9) 
+            : LightColorTheme.grey,
       ),
-      child: Text(
-        widget.hintText,
-        textAlign: TextAlign.center,
-        style:
-            widget.isPrimary
-                ? LightTextTheme.bold.copyWith(
-                  color: LightColorTheme.white,
-                  fontSize: 15,
-                )
-                : LightTextTheme.semibold.copyWith(
-                  color: LightColorTheme.black,
-                  fontSize: 15,
+      child: isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  widget.isPrimary ? Colors.white : LightColorTheme.mainColor,
                 ),
-      ),
+              ),
+            )
+          : Text(
+              widget.hintText,
+              textAlign: TextAlign.center,
+              style:
+                  widget.isPrimary
+                      ? LightTextTheme.bold.copyWith(
+                        color: LightColorTheme.white,
+                        fontSize: 15,
+                      )
+                      : LightTextTheme.semibold.copyWith(
+                        color: LightColorTheme.black,
+                        fontSize: 15,
+                      ),
+            ),
     );
   }
 }

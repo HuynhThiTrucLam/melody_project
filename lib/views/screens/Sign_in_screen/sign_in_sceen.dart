@@ -1,5 +1,6 @@
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
+import 'package:MELODY/views/screens/Sign_in_screen/forgot_password_screen.dart';
 import 'package:MELODY/views/screens/Sign_in_screen/phone_sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
@@ -201,7 +202,12 @@ class _SignInScreenState extends State<SignInScreen> {
       alignment: Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
-          // TODO: Implement forgot password functionality
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ForgotPasswordScreen(),
+            ),
+          );
         },
         child: Text(
           'Quên mật khẩu?',
