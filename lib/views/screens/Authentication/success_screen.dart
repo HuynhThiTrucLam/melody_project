@@ -4,6 +4,7 @@ import 'package:MELODY/routes/app_routes.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
+import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,7 @@ class SuccessScreen extends StatefulWidget {
   final String description;
   final String buttonText;
   final String imagePath;
+  final bool isSignUp;
   const SuccessScreen({
     super.key,
     this.title = "Chào mừng quay trở lại!",
@@ -25,6 +27,7 @@ class SuccessScreen extends StatefulWidget {
         "Hãy cùng tận hưởng những giai điệu yêu thích của bạn ngay bây giờ!",
     this.buttonText = "Nghe nhạc ngay thôi",
     this.imagePath = ImageTheme.illustrationSignInSuccess,
+    this.isSignUp = false,
   });
 
   @override
@@ -49,11 +52,21 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   void _navigateToMainApp() {
     if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.direction,
-        (route) => false,
-      );
+      if (widget.isSignUp) {
+        // If user just signed up, navigate to user direction screen
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const UserDirectionScreen()),
+          (route) => false,
+        );
+      } else {
+        // Otherwise navigate to normal app flow
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.direction,
+          (route) => false,
+        );
+      }
     }
   }
 

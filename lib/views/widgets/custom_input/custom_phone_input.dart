@@ -7,7 +7,9 @@ class CustomPhoneInput extends StatelessWidget {
   final List<CountryCode> countryCodes;
   final CountryCode selectedCountry;
   final Function(CountryCode) onCountryChanged;
+  final Function(String)? onChanged;
   final String? phoneError;
+  final bool? hasBorder;
 
   const CustomPhoneInput({
     super.key,
@@ -15,7 +17,9 @@ class CustomPhoneInput extends StatelessWidget {
     required this.countryCodes,
     required this.selectedCountry,
     required this.onCountryChanged,
+    this.onChanged,
     this.phoneError,
+    this.hasBorder = true,
   });
 
   @override
@@ -25,8 +29,18 @@ class CustomPhoneInput extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
+            border:
+                hasBorder == true
+                    ? Border.all(color: Colors.black12)
+                    : Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.black),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 3,
+                offset: Offset(-1.8, 1.8),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -38,9 +52,8 @@ class CustomPhoneInput extends StatelessWidget {
                 },
               ),
               Container(
-                margin: const EdgeInsets.only(left: 6),
-                height: 30,
-                width: 1,
+                height: 53,
+                width: 0.2,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black12),
                 ),
@@ -48,7 +61,8 @@ class CustomPhoneInput extends StatelessWidget {
               Expanded(
                 child: PhoneInputField(
                   controller: phoneController,
-                  hintText: '123345567',
+                  hintText: 'Số điện thoại',
+                  onChanged: onChanged,
                 ),
               ),
             ],
@@ -92,7 +106,12 @@ class PhoneInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
       child: TextField(
         controller: controller,
         obscureText: isPassword,
@@ -100,7 +119,10 @@ class PhoneInputField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
             borderSide: BorderSide.none,
           ),
           prefixIcon:
@@ -124,11 +146,17 @@ class PhoneInputField extends StatelessWidget {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
             borderSide: BorderSide.none,
           ),
           isDense: true,

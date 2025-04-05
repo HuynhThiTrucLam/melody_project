@@ -264,7 +264,7 @@ class _CountryCodeDropdownState extends State<CountryCodeDropdown> {
       child: InkWell(
         onTap: _toggleDropdown,
         child: Container(
-          height: 55,
+          height: 53,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.white,

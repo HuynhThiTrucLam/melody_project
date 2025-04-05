@@ -1,21 +1,29 @@
-import 'package:MELODY/views/screens/Sign_in_screen/sign_in_sceen.dart';
+import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
+import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
-
-void _handleClickOnAlreadyHaveAccount(BuildContext context) {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => const SignInScreen()),
-  );
-}
 
 class DirectionScreen extends StatelessWidget {
   const DirectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    void _handleClickOnAlreadyHaveAccount(BuildContext context) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
+      );
+    }
+
+    void _handleClickOnSignUp(BuildContext context) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignUpScreen()),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -77,7 +85,7 @@ class DirectionScreen extends StatelessWidget {
               CustomButton(
                 hintText: "Đăng ký tài khoản miễn phí",
                 isPrimary: false,
-                onPressed: () => {},
+                onPressed: () => _handleClickOnSignUp(context),
               ),
               const Spacer(),
             ],

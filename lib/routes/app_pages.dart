@@ -1,8 +1,8 @@
 import 'package:MELODY/routes/app_routes.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/introduction_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/phone_sign_in_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/sign_in_sceen.dart';
+import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
+import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppPages {

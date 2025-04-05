@@ -1,7 +1,9 @@
+import 'package:MELODY/core/utils/navigation.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/forgot_password_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/phone_sign_in_screen.dart';
+import 'package:MELODY/views/screens/Authentication/forgot_password_screen.dart';
+import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
+import 'package:MELODY/views/screens/Authentication/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
@@ -26,6 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _obscurePassword = true;
   String? _usernameError;
   String? _passwordError;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -39,31 +42,36 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       backgroundColor: LightColorTheme.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 16.0,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 40),
+                    _buildLoginForm(),
+                    const SizedBox(height: 16),
+                    _buildForgotPassword(),
+                    const SizedBox(height: 24),
+                    _buildLoginButton(),
+                    const SizedBox(height: 32),
+                    _buildDivider(),
+                    const SizedBox(height: 32),
+                    _buildAlternativeLoginOptions(context),
+                    const SizedBox(height: 40),
+                    _buildSignUpPrompt(),
+                  ],
+                ),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 40),
-                _buildLoginForm(),
-                const SizedBox(height: 16),
-                _buildForgotPassword(),
-                const SizedBox(height: 24),
-                _buildLoginButton(),
-                const SizedBox(height: 32),
-                _buildDivider(),
-                const SizedBox(height: 32),
-                _buildAlternativeLoginOptions(context),
-                const SizedBox(height: 40),
-                _buildSignUpPrompt(),
-              ],
-            ),
-          ),
+            if (_isLoading) _buildLoadingOverlay(),
+          ],
         ),
       ),
     );
@@ -202,12 +210,7 @@ class _SignInScreenState extends State<SignInScreen> {
       alignment: Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ForgotPasswordScreen(),
-            ),
-          );
+          Navigation.navigateTo(context, const ForgotPasswordScreen(), false);
         },
         child: Text(
           'Quên mật khẩu?',
@@ -225,6 +228,7 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       _usernameError = null;
       _passwordError = null;
+      _isLoading = true;
     });
 
     // Validate form fields
@@ -244,29 +248,60 @@ class _SignInScreenState extends State<SignInScreen> {
       hasError = true;
     }
 
-    if (hasError) return;
+    if (hasError) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     // TODO: Replace with actual API call
     // Simulating API call for demonstration
-    if (_usernameController.text != 'demo') {
-      setState(() {
-        _usernameError = 'Tài khoản không tồn tại';
-      });
-      return;
-    }
+    try {
+      // Add a delay to simulate network request
+      await Future.delayed(const Duration(seconds: 2));
 
-    if (_passwordController.text != 'password123') {
-      setState(() {
-        _passwordError = 'Mật khẩu không chính xác';
-      });
-      return;
-    }
+      if (_usernameController.text != 'demo') {
+        setState(() {
+          _usernameError = 'Tài khoản không tồn tại';
+          _isLoading = false;
+        });
+        return;
+      }
 
-    // Login successful
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Đăng nhập thành công')));
-    debugPrint('Login successful: ${_usernameController.text}');
+      if (_passwordController.text != 'password123') {
+        setState(() {
+          _passwordError = 'Mật khẩu không chính xác';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Login successful
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Đăng nhập thành công',
+            style: TextStyle(color: LightColorTheme.mainColor),
+          ),
+          backgroundColor: Color.fromARGB(255, 237, 237, 237),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+      debugPrint('Login successful: ${_usernameController.text}');
+      Navigation.navigateTo(context, const SuccessScreen(), false);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Đã xảy ra lỗi: ${e.toString()}')));
+    }
   }
 
   Widget _buildLoginButton() {
@@ -381,6 +416,35 @@ Widget _buildSignUpPrompt() {
           ),
         ),
       ],
+    ),
+  );
+}
+
+Widget _buildLoadingOverlay() {
+  return Container(
+    color: Colors.white.withOpacity(0.8),
+    width: double.infinity,
+    height: double.infinity,
+    child: Center(
+      child: Container(
+        padding: const EdgeInsets.all(40),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 60,
+              height: 60,
+              child: const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  LightColorTheme.mainColor,
+                ),
+                strokeWidth: 4,
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
 }

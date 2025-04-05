@@ -1,8 +1,7 @@
 import 'package:MELODY/core/utils/navigation.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/forgot_password_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/sign_in_sceen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/success_screen.dart';
+import 'package:MELODY/views/screens/Authentication/forgot_password_screen.dart';
+import 'package:MELODY/views/screens/Authentication/success_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/views/widgets/custom_input/default_input.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +27,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   String? _passwordError;
   String? _confirmPasswordError;
@@ -43,26 +43,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight:
-                    MediaQuery.of(context).size.height -
-                    AppBar().preferredSize.height -
-                    MediaQuery.of(context).padding.top,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildInputFields(),
-                ],
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight:
+                        MediaQuery.of(context).size.height -
+                        AppBar().preferredSize.height -
+                        MediaQuery.of(context).padding.top,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 24),
+                      _buildInputFields(),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            if (_isLoading) _buildLoadingOverlay(),
+          ],
         ),
       ),
     );
@@ -269,11 +274,41 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.white.withOpacity(0.8),
+      width: double.infinity,
+      height: double.infinity,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(40),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 60,
+                height: 60,
+                child: const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    LightColorTheme.mainColor,
+                  ),
+                  strokeWidth: 4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleResetPassword() async {
     // Reset previous errors
     setState(() {
       _passwordError = null;
       _confirmPasswordError = null;
+      _isLoading = true;
     });
 
     // Validate password fields
@@ -304,24 +339,49 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       hasError = true;
     }
 
-    if (hasError) return;
+    if (hasError) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
-    // TODO: Implement actual password reset API call
-    // For demo purposes, simulate a successful reset
+    try {
+      // TODO: Implement actual password reset API call
+      // For demo purposes, simulate a successful reset
+      await Future.delayed(const Duration(seconds: 2));
 
-    // Show success dialog
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
-    Navigation.navigateTo(
-      context,
-      const SuccessScreen(
-        title: 'Thành công đặt lại mật khẩu',
-        description:
-            'Mật khẩu mới của tài khoản melodySayHi đã được cập nhật thành công',
-        buttonText: 'Nghe nhạc ngay thôi',
-      ),
-      false,
-    );
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Show success dialog
+      Navigation.navigateTo(
+        context,
+        const SuccessScreen(
+          title: 'Thành công đặt lại mật khẩu',
+          description:
+              'Mật khẩu mới của tài khoản melodySayHi đã được cập nhật thành công',
+          buttonText: 'Nghe nhạc ngay thôi',
+        ),
+        false,
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Đã xảy ra lỗi: ${e.toString()}',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildResetButton() {

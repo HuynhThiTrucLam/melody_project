@@ -1,1 +1,1 @@
-enum OtpType { signIn, resetPassword }
+enum OtpType { signIn, resetPassword, signUp }

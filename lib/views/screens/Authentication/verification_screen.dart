@@ -3,10 +3,12 @@ import 'package:MELODY/core/models/otp_type.dart';
 import 'package:MELODY/core/utils/navigation.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/phone_sign_in_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/success_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/forgot_password_screen.dart';
-import 'package:MELODY/views/screens/Sign_in_screen/reset_password_screen.dart';
+import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
+import 'package:MELODY/views/screens/Authentication/success_screen.dart';
+import 'package:MELODY/views/screens/Authentication/forgot_password_screen.dart';
+import 'package:MELODY/views/screens/Authentication/reset_password_screen.dart';
+import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
+import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -120,30 +122,35 @@ class _VerificationScreenState extends State<VerificationScreen>
     return Scaffold(
       backgroundColor: LightColorTheme.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 16.0,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 14),
+                    _buildInstructionText(),
+                    const SizedBox(height: 24),
+                    _buildVerificationCodeInput(),
+                    const SizedBox(height: 16),
+                    if (_verificationError != null) _buildErrorMessage(),
+                    const SizedBox(height: 16),
+                    _buildResendTimer(),
+                    const SizedBox(height: 24),
+                    _buildVerifyButton(),
+                  ],
+                ),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 14),
-                _buildInstructionText(),
-                const SizedBox(height: 24),
-                _buildVerificationCodeInput(),
-                const SizedBox(height: 16),
-                if (_verificationError != null) _buildErrorMessage(),
-                const SizedBox(height: 16),
-                _buildResendTimer(),
-                const SizedBox(height: 24),
-                _buildVerifyButton(),
-              ],
-            ),
-          ),
+            if (_isVerifying) _buildLoadingOverlay(),
+          ],
         ),
       ),
     );
@@ -154,6 +161,8 @@ class _VerificationScreenState extends State<VerificationScreen>
       var nextScreen =
           widget.otpType == OtpType.signIn
               ? const PhoneSignInScreen()
+              : widget.otpType == OtpType.signUp
+              ? const SignUpScreen()
               : const ForgotPasswordScreen();
       Navigation.navigateTo(context, nextScreen, true);
     }
@@ -525,6 +534,12 @@ class _VerificationScreenState extends State<VerificationScreen>
             ResetPasswordScreen(phoneNumber: widget.phoneNumber),
             false,
           );
+        } else if (widget.otpType == OtpType.signUp) {
+          // Navigate to the success screen after successful verification
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (!mounted) return;
+
+          Navigation.navigateTo(context, const UserDirectionScreen(), false);
         }
       }
 
@@ -553,8 +568,37 @@ class _VerificationScreenState extends State<VerificationScreen>
     return CustomButton(
       hintText: _isVerifying ? 'Đang xác thực...' : 'Xác thực',
       isPrimary: true,
-      isLoading: _isVerifying,
+      isLoading: false,
       onPressed: _isVerifying ? null : _verifyCode,
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.white.withOpacity(0.8),
+      width: double.infinity,
+      height: double.infinity,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(40),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 60,
+                height: 60,
+                child: const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    LightColorTheme.mainColor,
+                  ),
+                  strokeWidth: 4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
