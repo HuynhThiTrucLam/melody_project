@@ -1,5 +1,6 @@
 import 'package:MELODY/views/widgets/slider_widget/slider_iem.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class SliderList extends StatefulWidget {
   const SliderList({super.key});
@@ -11,6 +12,7 @@ class SliderList extends StatefulWidget {
 class _SliderListState extends State<SliderList> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Timer? _timer;
 
   final List<Map<String, String>> slides = [
     {
@@ -29,49 +31,81 @@ class _SliderListState extends State<SliderList> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
+      if (_currentPage < slides.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: slides.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              return SliderItem(
-                imagePath: slides[index]["image"]!,
-                text: slides[index]["text"]!,
-              );
-            },
+    return SizedBox(
+      height: 300,
+      child: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: slides.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return SliderItem(
+                  imagePath: slides[index]["image"]!,
+                  text: slides[index]["text"]!,
+                );
+              },
+            ),
           ),
-        ),
-        SizedBox(height: 40),
-        // Indicator Dots
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            slides.length,
-            (index) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 6),
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.black,
-                  width: 1, // Thin border for inactive dots
+          SizedBox(height: 40),
+          // Indicator Dots
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              slides.length,
+              (index) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6),
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1, // Thin border for inactive dots
+                  ),
+                  color:
+                      _currentPage == index ? Colors.black : Colors.transparent,
                 ),
-                color:
-                    _currentPage == index ? Colors.black : Colors.transparent,
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
