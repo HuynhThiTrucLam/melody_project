@@ -1,4 +1,3 @@
-import 'package:MELODY/data/models/UI/music_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/widgets/music_list/music_item.dart';
@@ -7,64 +6,74 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class MusicCarousel extends StatefulWidget {
+  final List<dynamic> items; // MusicData or AlbumData
+  final MediaType type;
+  final String title;
+
+  const MusicCarousel({
+    Key? key,
+    required this.items,
+    required this.type,
+    required this.title,
+  }) : super(key: key);
+
   @override
   _MusicCarouselState createState() => _MusicCarouselState();
 }
 
 class _MusicCarouselState extends State<MusicCarousel> {
-  int activeIndex = 0;
+  int activeIndex = 1;
   final controller = carousel.CarouselSliderController();
+  int get dotCount => (widget.items.length / 3).ceil(); // 1 dot per 3 items
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Title & Indicator
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text("Đề xuất cho bạn", style: LightTextTheme.headding2),
-              ],
-            ),
-
+            Text(widget.title, style: LightTextTheme.headding2),
             AnimatedSmoothIndicator(
               activeIndex: activeIndex,
-              count: MusicDataList.musics.length ~/ 3,
+              count: dotCount,
+              onDotClicked: (dotIndex) {
+                controller.animateToPage(dotIndex * 3); // Jump 3 items forward
+              },
               effect: WormEffect(
                 dotWidth: 6,
                 dotHeight: 6,
-                dotColor: Color(0xFFE0D1D1), // Inactive dot color
+                dotColor: const Color(0xFFE0D1D1),
                 activeDotColor: LightColorTheme.black,
               ),
             ),
           ],
         ),
 
-        SizedBox(height: 14),
+        const SizedBox(height: 14),
+
+        // Carousel
         carousel.CarouselSlider.builder(
           carouselController: controller,
-          itemCount: MusicDataList.musics.length,
+          itemCount: widget.items.length,
           itemBuilder: (context, index, realIndex) {
-            final item = MusicDataList.musics[index];
-            return GestureDetector(
+            final item = widget.items[index];
+            return MusicListItem(
+              item: item,
+              type: widget.type,
               onTap: () {
-                // Handle item tap
-                print("Tapped on ${item.name}");
+                // You can pass a callback if needed
+                print(
+                  "Tapped on ${widget.type == MediaType.song ? item.name : item.title}",
+                );
               },
-              child: MusicListItem(
-                music: item,
-                onTap: () {
-                  // Handle item tap
-                  print("Tapped on ${item.name}");
-                },
-              ),
             );
           },
           options: carousel.CarouselOptions(
             height: 250,
-            initialPage: 1,
+            initialPage: activeIndex,
             enableInfiniteScroll: false,
             viewportFraction: 0.6,
             enlargeCenterPage: true,
@@ -76,58 +85,4 @@ class _MusicCarouselState extends State<MusicCarousel> {
       ],
     );
   }
-
-  // Widget buildMusicCard(Map<String, String> item) {
-  //   return Container(
-  //     margin: const EdgeInsets.symmetric(horizontal: 6),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(20),
-  //       image: DecorationImage(
-  //         image: NetworkImage(item['image']!),
-  //         fit: BoxFit.cover,
-  //       ),
-  //     ),
-  //     child: Container(
-  //       padding: const EdgeInsets.all(16),
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(20),
-  //         gradient: LinearGradient(
-  //           colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-  //           begin: Alignment.bottomCenter,
-  //           end: Alignment.topCenter,
-  //         ),
-  //       ),
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.end,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Container(
-  //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  //             decoration: BoxDecoration(
-  //               color: Colors.green[600],
-  //               borderRadius: BorderRadius.circular(30),
-  //             ),
-  //             child: Text(
-  //               item['views']!,
-  //               style: TextStyle(color: Colors.white),
-  //             ),
-  //           ),
-  //           SizedBox(height: 10),
-  //           Text(
-  //             item['title']!,
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontWeight: FontWeight.bold,
-  //               fontSize: 16,
-  //             ),
-  //           ),
-  //           Text(
-  //             item['artist']!,
-  //             style: TextStyle(color: Colors.white70, fontSize: 14),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

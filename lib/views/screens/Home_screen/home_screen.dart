@@ -1,3 +1,5 @@
+import 'package:MELODY/data/models/UI/album_data.dart';
+import 'package:MELODY/data/models/UI/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
@@ -5,6 +7,7 @@ import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
 import 'package:MELODY/views/widgets/layout/base_layout.dart';
 import 'package:MELODY/views/widgets/music_list/music_carousel.dart';
+import 'package:MELODY/views/widgets/music_list/music_item.dart';
 import 'package:MELODY/views/widgets/search_bar/search_bar.dart';
 import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +35,7 @@ class HomeScreen extends StatelessWidget {
       },
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
             children: [
               //Heading
@@ -149,7 +152,21 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              MusicCarousel(),
+              // Songs
+              MusicCarousel(
+                items: MusicDataList.musics,
+                type: MediaType.song,
+                title: "Đề xuất cho bạn",
+              ),
+
+              const SizedBox(height: 32),
+
+              // Albums
+              MusicCarousel(
+                items: AlbumDataList.albums,
+                type: MediaType.album,
+                title: "Album nổi bật",
+              ),
             ],
           ),
         ),

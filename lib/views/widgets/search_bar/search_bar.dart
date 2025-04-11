@@ -29,7 +29,7 @@ class CustomSearchBar extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.iconColor,
-    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+    this.padding = const EdgeInsets.symmetric(horizontal: 8),
     this.borderRadius,
   }) : super(key: key);
 

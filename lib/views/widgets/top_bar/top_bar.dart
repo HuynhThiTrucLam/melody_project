@@ -26,12 +26,16 @@ class CustomTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: true, // Keep top safe area
+      bottom: false, // Remove bottom safe area completely
+      left: true, // Remove left safe area
+      right: true, // Remove right safe area
       child: Padding(
         padding: const EdgeInsets.only(
           left: 24,
-          right: 24,
-          top: 8,
-          bottom: 0, // Remove bottom padding
+          right: 16,
+          top: 4, // Reduced padding at top
+          bottom: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
