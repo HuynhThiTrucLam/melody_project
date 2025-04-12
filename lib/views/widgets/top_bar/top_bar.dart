@@ -87,7 +87,7 @@ class CustomTopBar extends StatelessWidget {
                         },
                         child: CustomSearchBar(
                           label: "Hot trending",
-                          leftIcon: Icons.trending_up,
+                          svgLeftIcon: ImageTheme.topTrendingIcon,
                           backgroundColor: Colors.white,
                           textColor: LightColorTheme.grey,
                           iconColor: LightColorTheme.grey,

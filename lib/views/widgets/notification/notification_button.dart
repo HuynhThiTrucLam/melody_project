@@ -15,37 +15,40 @@ class NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 45, // Ensure there's enough space
-      height: 45,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SvgPicture.asset(
-            ImageTheme.notification,
-            width: 25,
-            height: 25,
-            colorFilter: ColorFilter.mode(
-              LightColorTheme.black,
-              BlendMode.srcIn,
-            ),
-          ),
-
-          if (hasNewNotification)
-            Positioned(
-              right: 8,
-              top: 8,
-              child: Container(
-                width: 14,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: LightColorTheme.mainColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1.5),
-                ),
+    return GestureDetector(
+      onTap: onPressed,
+      child: SizedBox(
+        width: 45, // Ensure there's enough space
+        height: 45,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SvgPicture.asset(
+              ImageTheme.notification,
+              width: 25,
+              height: 25,
+              colorFilter: ColorFilter.mode(
+                LightColorTheme.black,
+                BlendMode.srcIn,
               ),
             ),
-        ],
+
+            if (hasNewNotification)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: LightColorTheme.mainColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

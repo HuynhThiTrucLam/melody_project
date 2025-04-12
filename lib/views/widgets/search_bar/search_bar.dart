@@ -9,7 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final String label;
-  final IconData? leftIcon; // optional now
+  final IconData? leftIcon;
   final String? svgLeftIcon;
   final double height;
   final double width;
@@ -18,6 +18,10 @@ class CustomSearchBar extends StatelessWidget {
   final Color? iconColor;
   final EdgeInsets padding;
   final BorderRadiusGeometry? borderRadius;
+  final bool isInSearchScreen;
+  final FocusNode? focusNode;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
 
   const CustomSearchBar({
     Key? key,
@@ -31,24 +35,71 @@ class CustomSearchBar extends StatelessWidget {
     this.iconColor,
     this.padding = const EdgeInsets.symmetric(horizontal: 8),
     this.borderRadius,
+    this.isInSearchScreen = false,
+    this.focusNode,
+    this.controller,
+    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (isInSearchScreen) {
+      return Container(
+        height: height,
+        width: width != double.infinity ? width : 300,
+        padding: padding,
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.white,
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          border: Border.all(color: LightColorTheme.grey, width: 0.5),
+        ),
+        child: Row(
+          children: [
+            if (leftIcon != null) ...[
+              Icon(leftIcon, color: iconColor),
+              const SizedBox(width: 8),
+            ] else if (svgLeftIcon != null) ...[
+              SvgPicture.asset(svgLeftIcon!, color: iconColor),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: TextField(
+                focusNode: focusNode,
+                controller: controller,
+                onChanged: onChanged,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: label,
+                  hintStyle: TextStyle(
+                    color: textColor ?? LightColorTheme.grey,
+                    fontWeight: LightTextTheme.medium.fontWeight,
+                  ),
+                ),
+              ),
+            ),
+            SvgPicture.asset(ImageTheme.searchIcon),
+          ],
+        ),
+      );
+    }
+
+    // Default tappable version (outside SearchScreen)
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SearchScreen(initialQuery: "Hot trending"),
-          ),
-        );
+        if (ModalRoute.of(context)?.settings.name != '/search') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              settings: const RouteSettings(name: '/search'),
+              builder:
+                  (context) => const SearchScreen(initialQuery: "Hot trending"),
+            ),
+          );
+        }
       },
       child: Container(
         height: height,
-        // Don't use infinite width here
-        width:
-            width != double.infinity ? width : 300, // Provide a fallback value
+        width: width != double.infinity ? width : 300,
         padding: padding,
         decoration: BoxDecoration(
           color: backgroundColor ?? Colors.white,
@@ -73,7 +124,6 @@ class CustomSearchBar extends StatelessWidget {
                 ),
               ),
             ),
-
             SvgPicture.asset(ImageTheme.searchIcon),
           ],
         ),

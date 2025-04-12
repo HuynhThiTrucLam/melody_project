@@ -14,3 +14,12 @@ class TagDataList {
     // Add more tags as needed
   ];
 }
+
+// call API get language of music
+class TagTypeOfData {
+  static final List<TagData> types = [
+    TagData(id: '1', name: 'Tất cả'),
+    TagData(id: '2', name: 'Việt Nam'),
+    TagData(id: '3', name: 'US/UK'),
+  ];
+}

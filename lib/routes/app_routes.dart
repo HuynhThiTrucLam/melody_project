@@ -8,5 +8,7 @@ class AppRoutes {
   static const String verificationCode = '/verification-code';
   static const String signUp = '/sign-up';
   static const String home = '/home';
+  static const String topTrending = '/top-trending';
   static const String search_screen = '/search_screen';
+  static const String notification = '/notification';
 }

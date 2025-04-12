@@ -11,6 +11,7 @@ class TagButton extends StatefulWidget {
   final double? fontWeight;
   final EdgeInsets padding;
   final BorderRadiusGeometry? borderRadius;
+  final Function(String)? onClick;
 
   const TagButton({
     Key? key,
@@ -22,6 +23,7 @@ class TagButton extends StatefulWidget {
     this.textSize = 12,
     this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     this.borderRadius,
+    this.onClick,
   }) : super(key: key);
 
   @override
@@ -29,17 +31,19 @@ class TagButton extends StatefulWidget {
 }
 
 class _TagButtonState extends State<TagButton> {
-  bool _isPressed = false;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: () {
+        if (widget.onClick != null) {
+          widget.onClick!(
+            widget.label,
+          ); // Call the onClick callback with the label
+        }
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
+        transform: Matrix4.identity()..scale(0.95),
         width: widget.width,
         padding: widget.padding,
         decoration: BoxDecoration(
@@ -47,9 +51,9 @@ class _TagButtonState extends State<TagButton> {
           borderRadius: widget.borderRadius ?? BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: LightColorTheme.grey.withOpacity(_isPressed ? 0.1 : 0.2),
-              blurRadius: _isPressed ? 1 : 2,
-              offset: _isPressed ? const Offset(0, 0) : const Offset(0, 0),
+              color: LightColorTheme.grey.withOpacity(0.2),
+              blurRadius: 2,
+              offset: const Offset(0, 0),
             ),
           ],
         ),

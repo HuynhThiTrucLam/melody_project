@@ -1,4 +1,5 @@
 import 'package:MELODY/theme/theme.dart';
+import 'package:MELODY/views/screens/Base_screen/base_screen.dart';
 import 'package:MELODY/views/screens/Home_screen/home_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/introduction_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class App extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: ThemeData(),
           // home: const Scaffold(body: IntroductionScreen()),
-          home: HomeScreen(),
+          home: BaseScreen(),
         );
       },
     );
