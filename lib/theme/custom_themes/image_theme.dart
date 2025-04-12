@@ -10,4 +10,17 @@ class ImageTheme {
   static const String illustratorSignInWithPhone =
       "assets/icons/illustrator/sign_in_with_phone.svg";
   static const String illustrationSignInSuccess = "assets/icons/slider1.svg";
+  // static const String phoneLocaleVietnam =
+  //     "assets/icons/phone_locale/vietname.svg";
+  // static const String illustratorSignInWithPhone =
+  //     "assets/icons/illustrator/sign_in_with_phone.svg";
+  static const String notification = "assets/icons/notification.svg";
+  static const String searchIcon = "assets/icons/search-icon.svg";
+  static const String topTrendingIcon = "assets/icons/top-trending-icon.svg";
+  static const String chillMan = "assets/icons/chill-man.svg";
+  static const String accountIcon = "assets/icons/accountIcon.svg";
+  static const String libraryIcon = "assets/icons/libraryIcon.svg";
+  static const String membershipIcon = "assets/icons/memberIcon.svg";
+  static const String uploadIcon = "assets/icons/uploadIcon.svg";
+  static const String homeIcon = "assets/icons/homeIcon.svg";
 }

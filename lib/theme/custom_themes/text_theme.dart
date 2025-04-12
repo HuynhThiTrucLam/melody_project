@@ -14,8 +14,8 @@ class LightTextTheme {
 
   static TextStyle headding2 = TextStyle(
     fontFamily: 'Gilroy',
-    fontSize: 20,
-    fontWeight: FontWeight.w700,
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0,
     // wordSpacing: 0,
   );

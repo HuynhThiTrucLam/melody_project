@@ -1,9 +1,13 @@
 import 'package:MELODY/core/utils/navigation.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/views/screens/Authentication/forgot_password.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
 import 'package:MELODY/views/screens/Authentication/forgot_password_screen.dart';
 import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
 import 'package:MELODY/views/screens/Authentication/success_screen.dart';
+// import 'package:MELODY/views/screens/Sign_in_screen/forgot_password.dart';
+// import 'package:MELODY/views/screens/Sign_in_screen/phone_sign_in_screen.dart';
+import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
 import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:flutter/material.dart';
@@ -82,47 +86,48 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget _buildHeader() {
-    void handleGoBack(BuildContext context) {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) =>
-                  const DirectionScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(-1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOut;
-            var tween = Tween(
-              begin: begin,
-              end: end,
-            ).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(position: offsetAnimation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 300),
-        ),
-      );
-    }
+    // void handleGoBack(BuildContext context) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     PageRouteBuilder(
+    //       pageBuilder:
+    //           (context, animation, secondaryAnimation) =>
+    //               const DirectionScreen(),
+    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //         const begin = Offset(-1.0, 0.0);
+    //         const end = Offset.zero;
+    //         const curve = Curves.easeInOut;
+    //         var tween = Tween(
+    //           begin: begin,
+    //           end: end,
+    //         ).chain(CurveTween(curve: curve));
+    //         var offsetAnimation = animation.drive(tween);
+    //         return SlideTransition(position: offsetAnimation, child: child);
+    //       },
+    //       transitionDuration: const Duration(milliseconds: 300),
+    //     ),
+    //   );
+    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            InkWell(
-              onTap: () => handleGoBack(context),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Icon(Icons.arrow_back, size: 20),
-              ),
-            ),
-          ],
-        ),
+        GoBackButton(),
+        // Row(
+        //   children: [
+        //     InkWell(
+        //       onTap: () => handleGoBack(context),
+        //       child: Container(
+        //         padding: const EdgeInsets.all(8),
+        //         decoration: BoxDecoration(
+        //           shape: BoxShape.circle,
+        //           border: Border.all(color: Colors.grey.shade300),
+        //         ),
+        //         child: const Icon(Icons.arrow_back, size: 20),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 24),
         Center(
           child: Column(
@@ -214,7 +219,12 @@ class _SignInScreenState extends State<SignInScreen> {
       alignment: Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
-          Navigation.navigateTo(context, const ForgotPasswordScreen(), false);
+          // TODO: Implement forgot password functionality
+          //Navigate to ForGotpass
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ForgotPassword()),
+          );
         },
         child: Text(
           'Quên mật khẩu?',
