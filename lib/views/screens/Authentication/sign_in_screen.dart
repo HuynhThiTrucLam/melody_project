@@ -4,12 +4,16 @@ import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
 import 'package:MELODY/views/screens/Authentication/forgot_password_screen.dart';
 import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
 import 'package:MELODY/views/screens/Authentication/success_screen.dart';
+import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
+import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/views/widgets/custom_input/default_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:MELODY/auth/google_auth_service.dart';
+import 'package:MELODY/auth/auth_service.dart';
 
 /// A screen that allows users to sign in to the MELODY app.
 ///
@@ -65,7 +69,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 32),
                     _buildAlternativeLoginOptions(context),
                     const SizedBox(height: 40),
-                    _buildSignUpPrompt(),
+                    _buildSignUpPrompt(context),
                   ],
                 ),
               ),
@@ -255,23 +259,15 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
-    // TODO: Replace with actual API call
-    // Simulating API call for demonstration
     try {
-      // Add a delay to simulate network request
-      await Future.delayed(const Duration(seconds: 2));
+      final authen = await AuthService().signIn(
+        _usernameController.text,
+        _passwordController.text,
+      );
 
-      if (_usernameController.text != 'demo') {
+      if (authen == null) {
         setState(() {
           _usernameError = 'Tài khoản không tồn tại';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      if (_passwordController.text != 'password123') {
-        setState(() {
-          _passwordError = 'Mật khẩu không chính xác';
           _isLoading = false;
         });
         return;
@@ -351,8 +347,19 @@ Widget _buildAlternativeLoginOptions(BuildContext context) {
       _buildAlternativeLoginButton(
         icon: Image.asset(ImageTheme.googleAuth),
         text: 'Tài khoản Google',
-        onPressed: () {
-          // TODO: Implement Google login
+        onPressed: () async {
+          final result = await GoogleAuthService().signInWithGoogle();
+          if (result != null) {
+            if (result.isNewUser == true) {
+              Navigation.navigateTo(
+                context,
+                const UserDirectionScreen(),
+                false,
+              );
+            } else {
+              Navigation.navigateTo(context, const SuccessScreen(), false);
+            }
+          }
         },
       ),
     ],
@@ -392,7 +399,7 @@ Widget _buildAlternativeLoginButton({
   );
 }
 
-Widget _buildSignUpPrompt() {
+Widget _buildSignUpPrompt(BuildContext context) {
   return Center(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -405,7 +412,7 @@ Widget _buildSignUpPrompt() {
         ),
         GestureDetector(
           onTap: () {
-            // TODO: Navigate to sign up screen
+            Navigation.navigateTo(context, const SignUpScreen(), false);
           },
           child: Text(
             'Đăng ký ngay',

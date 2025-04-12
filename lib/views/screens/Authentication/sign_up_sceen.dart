@@ -1,10 +1,14 @@
+import 'package:MELODY/auth/google_auth_service.dart';
+import 'package:MELODY/auth/auth_service.dart';
 import 'package:MELODY/core/models/country_code.dart';
 import 'package:MELODY/core/models/otp_type.dart';
 import 'package:MELODY/core/services/country_code_service.dart';
 import 'package:MELODY/core/utils/navigation.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/views/screens/Authentication/success_screen.dart';
 import 'package:MELODY/views/screens/Authentication/verification_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
+import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:MELODY/views/widgets/custom_input/custom_phone_input.dart';
 import 'package:flutter/material.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
@@ -26,6 +30,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final GoogleAuthService _googleAuthService = GoogleAuthService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -373,8 +378,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Simulating API call for demonstration
     try {
       // Add a delay to simulate network request
-      await Future.delayed(const Duration(seconds: 2));
+      final authen = await AuthService().signUp(
+        _usernameController.text,
+        _passwordController.text,
+        _phoneController.text,
+      );
 
+      if (authen == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      if (!mounted) return;
       // Sign up successful
       setState(() {
         _isLoading = false;
@@ -468,8 +484,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _buildAlternativeSignUpButton(
           icon: Image.asset(ImageTheme.googleAuth),
           text: 'Đăng ký với Google',
-          onPressed: () {
-            // TODO: Implement Google sign up
+          onPressed: () async {
+            final authen = await _googleAuthService.signInWithGoogle();
+            if (authen != null) {
+              await Future.delayed(const Duration(milliseconds: 200));
+              if (!mounted) return;
+              if (authen.isNewUser == true) {
+                Navigation.navigateTo(
+                  context,
+                  const UserDirectionScreen(),
+                  false,
+                );
+              } else {
+                Navigation.navigateTo(context, const SuccessScreen(), false);
+              }
+            }
           },
         ),
       ],

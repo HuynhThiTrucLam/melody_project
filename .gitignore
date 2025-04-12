@@ -39,6 +39,10 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
+# Environment variables
+.env
+!.env.example
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
