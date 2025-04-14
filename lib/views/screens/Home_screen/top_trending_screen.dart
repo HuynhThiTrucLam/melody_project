@@ -5,7 +5,7 @@ import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
 
 class TopTrendingScreen extends StatefulWidget {
-  TopTrendingScreen({super.key});
+  const TopTrendingScreen({super.key});
 
   @override
   State<TopTrendingScreen> createState() => _TopTrendingScreenState();
@@ -60,7 +60,7 @@ class _TopTrendingScreenState extends State<TopTrendingScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TopTrendingScreen(),
+                              builder: (context) => const TopTrendingScreen(),
                             ),
                           );
                         },
@@ -74,11 +74,19 @@ class _TopTrendingScreenState extends State<TopTrendingScreen> {
         ],
       ),
     );
+
+    // Using BaseLayout with the updated parameters
     return BaseLayout(
       child: childContent,
       showBottomNav: false,
       showTopBar: true,
       isSearchBar: true,
+      currentIndex:
+          -1, // Use -1 or another value to indicate this is not part of the main navigation
+      onNavigationTap: (_) {
+        // Empty callback since navigation is disabled for this screen
+        // You could also use Navigator.pop here to go back when tapped
+      },
     );
   }
 }

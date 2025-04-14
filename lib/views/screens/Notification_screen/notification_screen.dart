@@ -17,11 +17,18 @@ class NotificationScreen extends StatelessWidget {
         ],
       ),
     );
+
     return BaseLayout(
-      child: notifiContent, // No need for extra Container
+      child: notifiContent,
       showBottomNav: false,
-      showTopBar: true, // Hide the top bar
+      showTopBar: true,
       isSearchBar: true,
+      currentIndex:
+          -1, // Use -1 or another value to indicate this is not part of the main navigation
+      onNavigationTap: (_) {
+        // Empty callback since navigation is disabled for this screen
+        // You could also use Navigator.pop here to go back when tapped
+      },
     );
   }
 }

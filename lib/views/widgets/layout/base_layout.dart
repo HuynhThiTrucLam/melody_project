@@ -1,127 +1,60 @@
-import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/views/widgets/bottom_nav/bottom_nav.dart';
-import 'package:flutter/material.dart';
+import 'package:MELODY/views/widgets/bottom_nav/bottom_bar.dart';
 import 'package:MELODY/views/widgets/top_bar/top_bar.dart';
+import 'package:flutter/material.dart';
 
 class BaseLayout extends StatelessWidget {
   final Widget child;
   final bool isSearchBar;
-  final VoidCallback? onBack;
-  final Function(String)? onSearch;
-  final VoidCallback? onNotification;
+  final bool showTopBar;
   final bool showBottomNav;
-  final int selectedTab;
-  final bool showTopBar; // Add this parameter
+  final VoidCallback? onNotification;
+  final int currentIndex;
+  final ValueChanged<int> onNavigationTap;
+  final bool isTypingEnabled; // whether the search bar is editable
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onSearch;
+  final VoidCallback? onBack;
 
   const BaseLayout({
+    Key? key,
     required this.child,
-    this.isSearchBar = false,
-    this.onBack,
-    this.onSearch,
-    this.onNotification,
+    this.isSearchBar = true,
+    this.showTopBar = true,
     this.showBottomNav = true,
-    this.selectedTab = 0,
-    this.showTopBar = true, // Default to showing top bar
-    super.key,
-  });
+    this.onNotification,
+    this.searchController,
+    this.isTypingEnabled = false,
+    this.onSearch,
+    this.onBack,
+    required this.currentIndex,
+    required this.onNavigationTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: LightColorTheme.white,
-      body: Column(
-        children: [
-          // Only show top bar if showTopBar is true
-          if (showTopBar)
-            CustomTopBar(
-              isSearchBar: isSearchBar,
-              onBack: onBack ?? () => Navigator.pop(context),
-              onSearch: onSearch ?? (String _) {},
-              onNotification: onNotification ?? () {},
-            ),
-          Expanded(child: child),
-        ],
-      ),
-      bottomNavigationBar:
-          showBottomNav
-              ? CustomBottomNav(
-                currentIndex: 2,
-                onTap: (index) {
-                  // Handle bottom navigation tap
-                },
+      appBar:
+          showTopBar
+              ? CustomTopBar(
+                isSearchBar: isSearchBar,
+                isTypingEnabled: isTypingEnabled,
+                searchController: searchController,
+                onBack: onBack ?? () => Navigator.of(context).pop(),
+                onSearch: onSearch ?? (query) => print(query),
+                onNotification:
+                    onNotification ?? () => print("Tapped notification"),
               )
               : null,
-    );
-  }
 
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            spreadRadius: 0,
-            blurRadius: 10,
-            offset: const Offset(0, -1),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: SizedBox(
-            height: 70,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  context,
-                  0,
-                  'Home',
-                  Icons.home_outlined,
-                  Icons.home,
-                ),
-                _buildNavItem(
-                  context,
-                  1,
-                  'Explore',
-                  Icons.explore_outlined,
-                  Icons.explore,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-    BuildContext context,
-    int index,
-    String label,
-    IconData icon,
-    IconData activeIcon,
-  ) {
-    final isSelected = selectedTab == index;
-    return GestureDetector(
-      onTap: () {
-        // Handle navigation
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isSelected ? activeIcon : icon,
-            color: isSelected ? Colors.blue : Colors.grey,
-          ),
-          Text(
-            label,
-            style: TextStyle(color: isSelected ? Colors.blue : Colors.grey),
-          ),
-        ],
-      ),
+      body: child,
+      extendBody: showBottomNav, // Only extend body if showing bottom nav
+      bottomNavigationBar:
+          showBottomNav
+              ? AnimatedNotchBottomNav(
+                currentIndex: currentIndex,
+                onTap: onNavigationTap,
+              )
+              : null,
     );
   }
 }

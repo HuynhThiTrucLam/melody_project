@@ -1,7 +1,7 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
 import 'package:MELODY/data/models/UI/music_data.dart';
-import 'package:MELODY/data/models/UI/album_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
+import 'package:MELODY/views/screens/Detail_song/detail_song.dart';
 import 'package:flutter/material.dart';
 
 enum MediaType { song, album }
@@ -18,6 +18,21 @@ class MusicListItem extends StatelessWidget {
     required this.type,
   }) : super(key: key);
 
+  void _handleTap(BuildContext context) {
+    if (type == MediaType.song) {
+      // Navigate to song detail screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailSong(songId: (item as MusicData).id),
+        ),
+      );
+    } else {
+      // Handle album tap
+      onTap();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Extract common properties based on item type
@@ -32,7 +47,7 @@ class MusicListItem extends StatelessWidget {
         type == MediaType.song ? 'lượt nghe' : 'lượt nghe';
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _handleTap(context),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
