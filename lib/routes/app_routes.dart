@@ -11,4 +11,6 @@ class AppRoutes {
   static const String topTrending = '/top-trending';
   static const String search_screen = '/search_screen';
   static const String notification = '/notification';
+
+  static const String songDetail = '/song-detail';
 }

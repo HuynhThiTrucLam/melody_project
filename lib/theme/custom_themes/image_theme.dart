@@ -23,4 +23,12 @@ class ImageTheme {
   static const String membershipIcon = "assets/icons/memberIcon.svg";
   static const String uploadIcon = "assets/icons/uploadIcon.svg";
   static const String homeIcon = "assets/icons/homeIcon.svg";
+  static const String heartIcon = "assets/icons/heartIcon.svg";
+  static const String downloadIcon = "assets/icons/downloadIcon.svg";
+  static const String shareIcon = "assets/icons/shareIcon.svg";
+  static const String stopIcon = "assets/icons/stopIcon.svg";
+  static const String playIcon = "assets/icons/playIcon.svg";
+  static const String replayIcon = "assets/icons/replayIcon.svg";
+  static const String prevSongIcon = "assets/icons/prevSongIcon.svg";
+  static const String nextSongIcon = "assets/icons/nextSongIcon.svg";
 }

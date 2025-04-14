@@ -9,11 +9,14 @@ import 'package:MELODY/views/widgets/search_bar/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomTopBar extends StatelessWidget {
+class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSearchBar;
   final VoidCallback onBack;
   final Function(String) onSearch;
   final VoidCallback onNotification;
+
+  final bool isTypingEnabled; // New: Whether to show text input
+  final TextEditingController? searchController; // New: Search controller
 
   const CustomTopBar({
     Key? key,
@@ -21,90 +24,134 @@ class CustomTopBar extends StatelessWidget {
     required this.onBack,
     required this.onSearch,
     required this.onNotification,
+    this.isTypingEnabled = false,
+    this.searchController,
   }) : super(key: key);
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true, // Keep top safe area
-      bottom: false, // Remove bottom safe area completely
-      left: true, // Remove left safe area
-      right: true, // Remove right safe area
+      top: true,
+      bottom: false,
+      left: true,
+      right: true,
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 24,
-          right: 16,
-          top: 4, // Reduced padding at top
-          bottom: 0,
-        ),
+        padding: const EdgeInsets.only(left: 20, right: 16, top: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Left side
+            // Left
             if (isSearchBar)
               GoBackButton(onPressed: onBack)
             else
               SvgPicture.asset(ImageTheme.logo, width: 150),
 
-            // Center - Search bar
+            // Center
             if (isSearchBar)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Hero(
-                    tag: 'searchBarHero',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      SearchScreen(
+                  child:
+                      isTypingEnabled
+                          ? TextField(
+                            controller: searchController,
+                            onChanged: onSearch,
+                            style: TextStyle(color: LightColorTheme.grey),
+                            cursorColor: LightColorTheme.grey,
+                            decoration: InputDecoration(
+                              hintText: "Hot trending",
+                              hintStyle: TextStyle(color: LightColorTheme.grey),
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.only(
+                                  left: 14,
+                                  right: 0,
+                                  top: 14,
+                                  bottom: 14,
+                                ),
+                                width: 24,
+                                height: 24,
+                                child: SvgPicture.asset(
+                                  ImageTheme.topTrendingIcon,
+                                  color: LightColorTheme.grey,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 13,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 0.8,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50),
+                                borderSide: BorderSide(
+                                  color:
+                                      LightColorTheme
+                                          .mainColor, // or any color you want when focused
+                                  width: 0.5,
+                                ),
+                              ),
+                            ),
+                          )
+                          : GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                      ) => SearchScreen(
                                         initialQuery: "Hot trending",
                                       ),
-                              transitionsBuilder: (
-                                context,
-                                animation,
-                                secondaryAnimation,
-                                child,
-                              ) {
-                                var begin = const Offset(0.0, 0.1);
-                                var end = Offset.zero;
-                                var curve = Curves.easeInOut;
-                                var tween = Tween(
-                                  begin: begin,
-                                  end: end,
-                                ).chain(CurveTween(curve: curve));
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
+                                  transitionsBuilder: (
+                                    context,
+                                    animation,
+                                    secondaryAnimation,
+                                    child,
+                                  ) {
+                                    var tween = Tween(
+                                      begin: const Offset(0.0, 0.1),
+                                      end: Offset.zero,
+                                    ).chain(
+                                      CurveTween(curve: Curves.easeInOut),
+                                    );
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: CustomSearchBar(
+                              label: "Hot trending",
+                              svgLeftIcon: ImageTheme.topTrendingIcon,
+                              backgroundColor: Colors.white,
+                              textColor: LightColorTheme.grey,
+                              iconColor: LightColorTheme.grey,
+                              borderRadius: BorderRadius.circular(50),
+                              width: 200,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 13,
+                              ),
                             ),
-                          );
-                        },
-                        child: CustomSearchBar(
-                          label: "Hot trending",
-                          svgLeftIcon: ImageTheme.topTrendingIcon,
-                          backgroundColor: Colors.white,
-                          textColor: LightColorTheme.grey,
-                          iconColor: LightColorTheme.grey,
-                          borderRadius: BorderRadius.circular(50),
-                          width: 200,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 13,
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ),
 
-            // Right side - Notification
+            // Right
             NotificationButton(
               onPressed: onNotification,
               hasNewNotification: true,

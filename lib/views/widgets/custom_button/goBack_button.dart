@@ -15,7 +15,9 @@ class GoBackButton extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.grey.shade300),
+            // border: Border.all(color: Colors.grey.shade300),
+            color: Colors.white,
+            backgroundBlendMode: BlendMode.overlay,
           ),
           child: const Icon(Icons.arrow_back, size: 20),
         ),

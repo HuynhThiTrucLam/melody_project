@@ -1,11 +1,9 @@
-// lib/src/common_widgets/search_bar.dart
-
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final String label;
@@ -22,6 +20,8 @@ class CustomSearchBar extends StatelessWidget {
   final FocusNode? focusNode;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final double iconSize;
+  final Size? svgIconSize;
 
   const CustomSearchBar({
     Key? key,
@@ -39,92 +39,96 @@ class CustomSearchBar extends StatelessWidget {
     this.focusNode,
     this.controller,
     this.onChanged,
+    this.iconSize = 20,
+    this.svgIconSize,
   }) : super(key: key);
+
+  Widget _buildIcon() {
+    if (leftIcon != null) {
+      return Icon(leftIcon, color: iconColor, size: iconSize);
+    } else if (svgLeftIcon != null) {
+      return SvgPicture.asset(
+        svgLeftIcon!,
+        color: iconColor,
+        width: svgIconSize?.width ?? iconSize,
+        height: svgIconSize?.height ?? iconSize,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  BoxDecoration get _decoration => BoxDecoration(
+    color: backgroundColor ?? Colors.white,
+    borderRadius: borderRadius ?? BorderRadius.circular(8),
+    border: Border.all(color: LightColorTheme.grey, width: 0.5),
+  );
 
   @override
   Widget build(BuildContext context) {
-    if (isInSearchScreen) {
-      return Container(
-        height: height,
-        width: width != double.infinity ? width : 300,
-        padding: padding,
-        decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(8),
-          border: Border.all(color: LightColorTheme.grey, width: 0.5),
-        ),
-        child: Row(
-          children: [
-            if (leftIcon != null) ...[
-              Icon(leftIcon, color: iconColor),
-              const SizedBox(width: 8),
-            ] else if (svgLeftIcon != null) ...[
-              SvgPicture.asset(svgLeftIcon!, color: iconColor),
-              const SizedBox(width: 8),
-            ],
-            Expanded(
-              child: TextField(
-                focusNode: focusNode,
-                controller: controller,
-                onChanged: onChanged,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: label,
-                  hintStyle: TextStyle(
-                    color: textColor ?? LightColorTheme.grey,
-                    fontWeight: LightTextTheme.medium.fontWeight,
-                  ),
-                ),
-              ),
-            ),
-            SvgPicture.asset(ImageTheme.searchIcon),
-          ],
-        ),
-      );
-    }
+    final isFullWidth = width == double.infinity;
 
-    // Default tappable version (outside SearchScreen)
     return GestureDetector(
-      onTap: () {
-        if (ModalRoute.of(context)?.settings.name != '/search') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              settings: const RouteSettings(name: '/search'),
-              builder:
-                  (context) => const SearchScreen(initialQuery: "Hot trending"),
-            ),
-          );
-        }
-      },
+      onTap:
+          !isInSearchScreen
+              ? () {
+                if (ModalRoute.of(context)?.settings.name != '/search') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      settings: const RouteSettings(name: '/search'),
+                      builder:
+                          (_) =>
+                              const SearchScreen(initialQuery: "Hot trending"),
+                    ),
+                  );
+                }
+              }
+              : null,
+      behavior: HitTestBehavior.translucent,
       child: Container(
         height: height,
-        width: width != double.infinity ? width : 300,
+        width: isFullWidth ? 300 : width,
         padding: padding,
-        decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(8),
-          border: Border.all(color: LightColorTheme.grey, width: 0.5),
-        ),
+        decoration: _decoration,
         child: Row(
           children: [
-            if (leftIcon != null) ...[
-              Icon(leftIcon, color: iconColor),
-              const SizedBox(width: 8),
-            ] else if (svgLeftIcon != null) ...[
-              SvgPicture.asset(svgLeftIcon!, color: iconColor),
+            if (leftIcon != null || svgLeftIcon != null) ...[
+              _buildIcon(),
               const SizedBox(width: 8),
             ],
             Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: textColor ?? LightColorTheme.grey,
-                  fontWeight: LightTextTheme.medium.fontWeight,
-                ),
-              ),
+              child:
+                  isInSearchScreen
+                      ? TextField(
+                        focusNode: focusNode,
+                        controller: controller,
+                        onChanged: onChanged,
+                        style: TextStyle(
+                          color: textColor ?? LightColorTheme.grey,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: label,
+                          hintStyle: TextStyle(
+                            color: textColor ?? LightColorTheme.grey,
+                            fontWeight: LightTextTheme.medium.fontWeight,
+                          ),
+                        ),
+                      )
+                      : Text(
+                        label,
+                        style: TextStyle(
+                          color: textColor ?? LightColorTheme.grey,
+                          fontWeight: LightTextTheme.medium.fontWeight,
+                        ),
+                      ),
             ),
-            SvgPicture.asset(ImageTheme.searchIcon),
+            SvgPicture.asset(
+              ImageTheme.searchIcon,
+              width: svgIconSize?.width ?? iconSize,
+              height: svgIconSize?.height ?? iconSize,
+              color: iconColor,
+            ),
           ],
         ),
       ),
