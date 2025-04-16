@@ -31,4 +31,6 @@ class ImageTheme {
   static const String replayIcon = "assets/icons/replayIcon.svg";
   static const String prevSongIcon = "assets/icons/prevSongIcon.svg";
   static const String nextSongIcon = "assets/icons/nextSongIcon.svg";
+  static const String notFoundIcon = "assets/icons/not-found.svg";
+  static const String topArrowIcon = "assets/icons/top-arrow.svg";
 }

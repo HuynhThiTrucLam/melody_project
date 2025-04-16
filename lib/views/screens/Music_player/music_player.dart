@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:MELODY/views/widgets/not_found/not_found.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import 'package:MELODY/data/models/UI/music_data.dart';
+import 'package:MELODY/services/music_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
@@ -12,45 +14,46 @@ import 'package:MELODY/views/screens/Notification_screen/notification_screen.dar
 import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
 import 'package:MELODY/views/widgets/notification/notification_button.dart';
 
-class MockSongDetailService {
-  static Future<MusicData> getSongDetail(String songId) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return MusicData(
-      id: '1',
-      name: 'Đừng làm trái tim anh đau',
-      artist: 'Sơn Tùng M-TP',
-      albumArt: 'https://i.ytimg.com/vi/7u4g483WTzw/hq720.jpg',
-      audioUrl: 'https://example.com/audio/dung_lam_trai_tim_anh_dau.mp3',
-      lyrics: 'Thấy thế thôi vui hơn có quà...',
-      duration: Duration(minutes: 3, seconds: 20),
-      listener: 1580000,
-      isFavorite: true,
-      genre: 'Synthwave',
-      releaseDate: DateTime(2020, 11, 29),
-    );
-  }
-}
-
-class DetailSong extends StatefulWidget {
-  final String songId;
-  const DetailSong({super.key, required this.songId});
+class MusicPlayer extends StatefulWidget {
+  final String musicId;
+  const MusicPlayer({super.key, required this.musicId});
 
   @override
-  State<DetailSong> createState() => _DetailSongState();
+  State<MusicPlayer> createState() => _MusicPlayerState();
 }
 
-class _DetailSongState extends State<DetailSong>
+class _MusicPlayerState extends State<MusicPlayer>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
   late Future<MusicData> songDetailFuture;
   Timer? _progressTimer;
   bool isPlaying = false;
+  bool isLyricsExpanded = false; // Add this line to track lyrics expanded state
   double currentPosition = 0.0;
+  final MusicService _musicService = MusicService();
+
+  // Full lyrics list (in a real app, this would come from a service or API)
+  final List<String> fullLyrics = [
+    'Hằng đêm anh nằm thao thức suy tư chẳng nhớ ai ngoài em đâu đâu',
+    'Vậy nên không cần nói nữa yêu mà đôi lời nói trong vài ba câu',
+    'Đêm nay sao em không đến thăm anh trong mơ',
+    'Dù chỉ là phút giây thôi',
+    'Mà nỗi nhớ cứ cuốn lấy trong tim anh',
+    'Thôi em tồn tại như vậy thôi',
+    'Dần dần thành thói quen',
+    'Một khi anh đã mến',
+    'Sẽ ở đó lâu bền',
+    'Dù cho ta chẳng bước đi chung đường',
+    'Ngày tháng cứ đi về phía trước',
+    'Dù đời đôi lúc u buồn',
+    'Có em còn cạnh anh luôn',
+    'Niềm vui vơi đầy trong tim',
+  ];
 
   @override
   void initState() {
     super.initState();
-    songDetailFuture = MockSongDetailService.getSongDetail(widget.songId);
+    songDetailFuture = _musicService.getMusicById(widget.musicId);
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 20),
@@ -82,9 +85,27 @@ class _DetailSongState extends State<DetailSong>
     return FutureBuilder<MusicData>(
       future: songDetailFuture,
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return const Center(child: CircularProgressIndicator());
+        // Handle loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: LightColorTheme.black.withOpacity(0.6),
+            body: Center(
+              child: CircularProgressIndicator(
+                color: LightColorTheme.mainColor,
+              ),
+            ),
+          );
+        }
 
+        // Handle error state
+        if (snapshot.hasError || snapshot.data == null) {
+          return NotFound(
+            title: 'Không tìm thấy bài hát',
+            message: 'Có lỗi xảy ra khi tải bài hát này.',
+          );
+        }
+
+        // If we have data, proceed normally
         final song = snapshot.data!;
         final screenHeight = MediaQuery.of(context).size.height;
         final screenWidth = MediaQuery.of(context).size.width;
@@ -97,7 +118,8 @@ class _DetailSongState extends State<DetailSong>
               _buildTopBar(),
               _buildRotatingDisc(song.albumArt, screenWidth),
               _buildLyrics(),
-              _buildBottomDetailContainer(song, screenWidth),
+              if (!isLyricsExpanded)
+                _buildBottomDetailContainer(song, screenWidth),
             ],
           ),
         );
@@ -106,13 +128,24 @@ class _DetailSongState extends State<DetailSong>
   }
 
   Widget _buildBackgroundImage(String albumArt, double height) {
-    return Image.network(
-      albumArt,
-      height: 0.7 * height,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+      height:
+          isLyricsExpanded ? MediaQuery.of(context).size.height : 0.7 * height,
       width: double.infinity,
-      fit: BoxFit.cover,
-      errorBuilder:
-          (_, __, ___) => Container(height: 250, color: Colors.grey[300]),
+      child: Image.network(
+        albumArt,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (_, __, ___) => Container(
+              height:
+                  isLyricsExpanded
+                      ? MediaQuery.of(context).size.height
+                      : 0.7 * height,
+              color: Colors.grey[300],
+            ),
+      ),
     );
   }
 
@@ -151,7 +184,7 @@ class _DetailSongState extends State<DetailSong>
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+          colors: [Colors.black.withOpacity(0.9), Colors.transparent],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
         ),
@@ -206,42 +239,186 @@ class _DetailSongState extends State<DetailSong>
   }
 
   Widget _buildLyrics() {
-    final lyrics = [
-      'Hằng đêm anh nằm thao thức suy tư chẳng nhớ ai ngoài em đâu đâu',
-      'Vậy nên không cần nói nữa yêu mà đôi lời nói trong vài ba câu',
-    ];
-    return Positioned(
-      top: 400,
-      left: 0,
-      right: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children:
-              lyrics
-                  .map(
-                    (line) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        line,
-                        textAlign: TextAlign.center,
-                        style: LightTextTheme.paragraph3.copyWith(
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.7),
-                              blurRadius: 6,
-                              offset: const Offset(1, 1),
+    if (isLyricsExpanded) {
+      // Show full lyrics when expanded
+      return Stack(
+        children: [
+          // Full screen overlay
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                // Ignore taps on background
+              },
+              child: Container(color: Colors.black.withOpacity(0.5)),
+            ),
+          ),
+
+          // Lyrics container with the same position as when not expanded
+          Positioned(
+            top: 400,
+            left: 0,
+            right: 0,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8.0),
+              // Using intrinsic height widget to get max-content behavior
+              child: IntrinsicHeight(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: 250, // Maximum height constraint
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                    // border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  child: OverflowBox(
+                    maxHeight: MediaQuery.of(context).size.height * 0.6,
+                    alignment: Alignment.topCenter,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 16.0,
+                        ),
+                        child: Column(
+                          children: [
+                            ...fullLyrics.map(
+                              (line) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Text(
+                                  line,
+                                  textAlign: TextAlign.center,
+                                  style: LightTextTheme.paragraph2.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
                             ),
+                            const SizedBox(
+                              height: 40,
+                            ), // Extra padding at the bottom
                           ],
                         ),
                       ),
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Back button
+          Positioned(
+            bottom: 64,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onVerticalDragEnd: (details) {
+                  // If the user drags up with some velocity, close the expanded view
+                  if (details.velocity.pixelsPerSecond.dy < -300) {
+                    setState(() {
+                      isLyricsExpanded = false;
+                    });
+                  }
+                },
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isLyricsExpanded = false;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: LightColorTheme.mainColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.zero,
+                    shape: const CircleBorder(),
+                    minimumSize: const Size(50, 50),
+                  ),
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        ImageTheme.topArrowIcon,
+                        width: 24,
+                        height: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      // Show preview lyrics with more content but in the same position
+      return Positioned(
+        top: 400,
+        left: 0,
+        right: 0,
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              isLyricsExpanded = true;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 12.0,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.transparent,
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 100, // Fixed height for lyrics container
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // Show first 4 lines from full lyrics for preview
+                        ...fullLyrics
+                            .take(4)
+                            .map(
+                              (line) => Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Text(
+                                  line,
+                                  textAlign: TextAlign.center,
+                                  style: LightTextTheme.paragraph3.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Nhấn để xem lời bài hát đầy đủ',
+                  style: LightTextTheme.paragraph3.copyWith(
+                    color: Colors.white70,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildBottomDetailContainer(MusicData song, double screenWidth) {

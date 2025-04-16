@@ -1,10 +1,28 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
 import 'package:MELODY/data/models/UI/music_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/views/screens/Detail_song/detail_song.dart';
+import 'package:MELODY/views/screens/Music_player/music_player.dart';
 import 'package:flutter/material.dart';
 
 enum MediaType { song, album }
+
+class MockSongDetailService {
+  static Future<MusicData> getSongDetail(String songId) async {
+    return MusicData(
+      id: '1',
+      name: 'Đừng làm trái tim anh đau',
+      artist: 'Sơn Tùng M-TP',
+      albumArt: 'https://i.ytimg.com/vi/7u4g483WTzw/hq720.jpg',
+      audioUrl: 'https://example.com/audio/dung_lam_trai_tim_anh_dau.mp3',
+      lyrics: 'Thấy thế thôi vui hơn có quà...',
+      duration: Duration(minutes: 3, seconds: 20),
+      listener: 1580000,
+      isFavorite: true,
+      genre: 'Synthwave',
+      releaseDate: DateTime(2020, 11, 29),
+    );
+  }
+}
 
 class MusicListItem extends StatelessWidget {
   final dynamic item; // Can be MusicData or AlbumData
@@ -20,11 +38,14 @@ class MusicListItem extends StatelessWidget {
 
   void _handleTap(BuildContext context) {
     if (type == MediaType.song) {
-      // Navigate to song detail screen
+      // Remove all loading dialog code and directly navigate to the music player
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => DetailSong(songId: (item as MusicData).id),
+        PageRouteBuilder(
+          pageBuilder:
+              (context, animation, secondaryAnimation) =>
+                  MusicPlayer(musicId: item.id),
+          transitionDuration: const Duration(milliseconds: 600),
         ),
       );
     } else {
