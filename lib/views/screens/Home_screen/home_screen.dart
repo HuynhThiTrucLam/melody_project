@@ -1,6 +1,6 @@
-import 'package:MELODY/data/models/UI/album_data.dart';
-import 'package:MELODY/data/models/UI/artist_data.dart';
-import 'package:MELODY/data/models/UI/music_data.dart';
+import 'package:MELODY/data/models/BE/album_data.dart';
+import 'package:MELODY/data/models/BE/artist_data.dart';
+import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
@@ -167,7 +167,10 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Artists
-            ArtistCarousel(artists: mockArtists, title: "Nghệ sĩ nổi bật"),
+            ArtistCarousel(
+              artists: ArtistDataList.mockArtists,
+              title: "Nghệ sĩ nổi bật",
+            ),
 
             const SizedBox(height: 32),
 

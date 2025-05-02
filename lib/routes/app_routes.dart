@@ -13,4 +13,5 @@ class AppRoutes {
   static const String notification = '/notification';
 
   static const String songDetail = '/song-detail';
+  static const String artistDetail = '/artist-detail';
 }

@@ -1,5 +1,6 @@
-import 'package:MELODY/data/models/UI/artist_data.dart';
+import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
+import 'package:MELODY/views/screens/Artist_screen/Artist_profile.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel;
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -64,11 +65,19 @@ class _ArtistCarouselState extends State<ArtistCarousel> {
                 clipBehavior: Clip.none, // Ensure this container doesn't clip
                 child: GestureDetector(
                   onTap: () {
-                    print('Tapped on ${artist.name}');
+                    // Handle artist item tap
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ArtistProfile(artistId: artist.id),
+                      ),
+                    );
                   },
                   child: ArtistItem(
+                    itemType: ItemType.artist,
                     name: artist.name,
-                    followers: artist.followers.toString(),
+                    subText: artist.followers.toString(),
                     avatarUrl: artist.avatarUrl,
                     isVerified: artist.isVerified,
                   ),

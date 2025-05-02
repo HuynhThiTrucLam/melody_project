@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:MELODY/views/screens/Music_player/library_tab.dart';
 import 'package:MELODY/views/widgets/not_found/not_found.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
-import 'package:MELODY/data/models/UI/music_data.dart';
-import 'package:MELODY/services/music_service.dart';
+import 'package:MELODY/data/models/BE/music_data.dart';
+import 'package:MELODY/data/services/music_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
@@ -28,27 +29,14 @@ class _MusicPlayerState extends State<MusicPlayer>
   late Future<MusicData> songDetailFuture;
   Timer? _progressTimer;
   bool isPlaying = false;
-  bool isLyricsExpanded = false; // Add this line to track lyrics expanded state
+  bool isLyricsExpanded = false;
   double currentPosition = 0.0;
+  late TimestampedLyrics _timestampedLyrics;
+  int _activeLyricIndex = -1;
   final MusicService _musicService = MusicService();
 
-  // Full lyrics list (in a real app, this would come from a service or API)
-  final List<String> fullLyrics = [
-    'Hằng đêm anh nằm thao thức suy tư chẳng nhớ ai ngoài em đâu đâu',
-    'Vậy nên không cần nói nữa yêu mà đôi lời nói trong vài ba câu',
-    'Đêm nay sao em không đến thăm anh trong mơ',
-    'Dù chỉ là phút giây thôi',
-    'Mà nỗi nhớ cứ cuốn lấy trong tim anh',
-    'Thôi em tồn tại như vậy thôi',
-    'Dần dần thành thói quen',
-    'Một khi anh đã mến',
-    'Sẽ ở đó lâu bền',
-    'Dù cho ta chẳng bước đi chung đường',
-    'Ngày tháng cứ đi về phía trước',
-    'Dù đời đôi lúc u buồn',
-    'Có em còn cạnh anh luôn',
-    'Niềm vui vơi đầy trong tim',
-  ];
+  // ScrollController to handle automatic scrolling of lyrics
+  final ScrollController _lyricsScrollController = ScrollController();
 
   @override
   void initState() {
@@ -60,6 +48,14 @@ class _MusicPlayerState extends State<MusicPlayer>
     );
   }
 
+  // Initialize timestamped lyrics when song data is available
+  void _initTimestampedLyrics(MusicData song) {
+    _timestampedLyrics = TimestampedLyrics.fromPlainText(
+      song.lyrics,
+      song.duration,
+    );
+  }
+
   @override
   void dispose() {
     _progressTimer?.cancel();
@@ -68,9 +64,33 @@ class _MusicPlayerState extends State<MusicPlayer>
   }
 
   void startProgress(MusicData song) {
-    _progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    // Initialize timestamped lyrics if needed
+    if (!this._timestampedLyrics.lines.isNotEmpty) {
+      _initTimestampedLyrics(song);
+    }
+
+    _progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (currentPosition < song.duration.inSeconds) {
-        setState(() => currentPosition += 1);
+        setState(() {
+          currentPosition += 0.1;
+          // Use the timestamped lyrics to find the active lyric line
+          final currentDuration = Duration(
+            milliseconds: (currentPosition * 1000).toInt(),
+          );
+          final newActiveIndex = _timestampedLyrics.getActiveLineIndex(
+            currentDuration,
+          );
+
+          // Only update and scroll if the active index has changed
+          if (newActiveIndex != _activeLyricIndex) {
+            _activeLyricIndex = newActiveIndex;
+
+            // Scroll to the active lyric line with a small delay to ensure UI is updated
+            Future.delayed(Duration(milliseconds: 50), () {
+              _scrollToActiveLyric(song);
+            });
+          }
+        });
       } else {
         timer.cancel();
         setState(() => isPlaying = false);
@@ -78,7 +98,138 @@ class _MusicPlayerState extends State<MusicPlayer>
     });
   }
 
-  void stopProgress() => _progressTimer?.cancel();
+  void stopProgress() {
+    _progressTimer?.cancel();
+  }
+
+  // Method to scroll to the active lyric
+  void _scrollToActiveLyric(MusicData song) {
+    if (_activeLyricIndex < 0 || !_lyricsScrollController.hasClients) return;
+
+    final lines =
+        song.lyrics
+            .split('\n')
+            .where((line) => line.trim().isNotEmpty)
+            .toList();
+    if (_activeLyricIndex >= lines.length) return;
+
+    // Calculate the position to scroll to
+    double position = 0;
+    // Define line height based on view state and include padding
+    final double lineHeight = isLyricsExpanded ? 40.0 : 30.0;
+    const double paddingBetweenLines =
+        6.0; // Fixed padding between lines in unexpanded view
+
+    // For unexpanded view, calculate position more precisely
+    if (!isLyricsExpanded) {
+      // Calculate position based on active lyric index
+      position = _activeLyricIndex * (lineHeight);
+
+      // Don't use negative padding in unexpanded mode to ensure lyric stays at top
+      position = position.clamp(
+        0,
+        _lyricsScrollController.position.maxScrollExtent,
+      );
+    } else {
+      // For expanded view, use existing calculation
+      position = _activeLyricIndex * lineHeight;
+      final topPadding = 20.0; // Padding for expanded view
+      position = position - topPadding;
+      position = position.clamp(
+        0,
+        _lyricsScrollController.position.maxScrollExtent,
+      );
+    }
+
+    // Smooth scroll to the position
+    _lyricsScrollController.animateTo(
+      position,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  // Method to update the active lyric index based on song progress
+  void updateActiveLyricIndex(MusicData song) {
+    // This is a simplified implementation
+    // In a real app, you would need timestamps for each lyric line
+    // For now, we'll use a simple approach based on song progress
+    final lyricsLines =
+        song.lyrics
+            .split('\n')
+            .where((line) => line.trim().isNotEmpty)
+            .toList();
+    if (lyricsLines.isEmpty) return;
+
+    final songProgress = currentPosition / song.duration.inSeconds;
+    final newIndex = (songProgress * lyricsLines.length).floor();
+
+    // Ensure the index is within bounds
+    if (newIndex != _activeLyricIndex && newIndex < lyricsLines.length) {
+      setState(() {
+        _activeLyricIndex = newIndex;
+      });
+    }
+  }
+
+  void getPreviousMusic(String presentId) async {
+    try {
+      final previousMusic = await _musicService.getPreviousMusic(presentId);
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder:
+              (context, animation, secondaryAnimation) =>
+                  MusicPlayer(musicId: previousMusic.id),
+          transitionDuration: const Duration(milliseconds: 600),
+        ),
+      );
+    } catch (e) {
+      // Handle error (e.g., show a message)
+    }
+  }
+
+  void getNextMusic(String presentId) async {
+    try {
+      final nextMusic = await _musicService.getNextMusic(presentId);
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder:
+              (context, animation, secondaryAnimation) =>
+                  MusicPlayer(musicId: nextMusic.id),
+          transitionDuration: const Duration(milliseconds: 600),
+        ),
+      );
+    } catch (e) {
+      // Handle error (e.g., show a message)
+    }
+  }
+
+  // Build a single lyric line with active/inactive styling
+  Widget _buildLyricLine(String line, int index, bool isActive) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: AnimatedDefaultTextStyle(
+        duration: const Duration(milliseconds: 300),
+        style:
+            isActive
+                ? LightTextTheme.paragraph2.copyWith(
+                  color: Colors.white,
+                  fontSize: 16,
+                  height: 1.5,
+                  fontWeight: LightTextTheme.semibold.fontWeight,
+                )
+                : LightTextTheme.paragraph2.copyWith(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 16,
+                  height: 1.5,
+                  fontWeight: FontWeight.normal,
+                ),
+        child: Text(line, textAlign: TextAlign.center),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +258,15 @@ class _MusicPlayerState extends State<MusicPlayer>
 
         // If we have data, proceed normally
         final song = snapshot.data!;
+
+        // Initialize timestamped lyrics if not already initialized
+        if (_activeLyricIndex == -1) {
+          _timestampedLyrics = TimestampedLyrics.fromPlainText(
+            song.lyrics,
+            song.duration,
+          );
+        }
+
         final screenHeight = MediaQuery.of(context).size.height;
         final screenWidth = MediaQuery.of(context).size.width;
 
@@ -117,7 +277,7 @@ class _MusicPlayerState extends State<MusicPlayer>
               _buildGradientOverlay(),
               _buildTopBar(),
               _buildRotatingDisc(song.albumArt, screenWidth),
-              _buildLyrics(),
+              _buildLyrics(song),
               if (!isLyricsExpanded)
                 _buildBottomDetailContainer(song, screenWidth),
             ],
@@ -238,7 +398,7 @@ class _MusicPlayerState extends State<MusicPlayer>
     );
   }
 
-  Widget _buildLyrics() {
+  Widget _buildLyrics(MusicData song) {
     if (isLyricsExpanded) {
       // Show full lyrics when expanded
       return Stack(
@@ -277,26 +437,23 @@ class _MusicPlayerState extends State<MusicPlayer>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: SingleChildScrollView(
+                        controller: _lyricsScrollController,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20.0,
                           vertical: 16.0,
                         ),
                         child: Column(
                           children: [
-                            ...fullLyrics.map(
-                              (line) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Text(
-                                  line,
-                                  textAlign: TextAlign.center,
-                                  style: LightTextTheme.paragraph2.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    height: 1.5,
+                            ...song.lyrics
+                                .split('\n')
+                                .map(
+                                  (line) => _buildLyricLine(
+                                    line,
+                                    song.lyrics.split('\n').indexOf(line),
+                                    song.lyrics.split('\n').indexOf(line) ==
+                                        _activeLyricIndex,
                                   ),
                                 ),
-                              ),
-                            ),
                             const SizedBox(
                               height: 40,
                             ), // Extra padding at the bottom
@@ -332,7 +489,7 @@ class _MusicPlayerState extends State<MusicPlayer>
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: LightColorTheme.mainColor,
+                    backgroundColor: LightColorTheme.white,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.zero,
                     shape: const CircleBorder(),
@@ -347,7 +504,7 @@ class _MusicPlayerState extends State<MusicPlayer>
                         ImageTheme.topArrowIcon,
                         width: 24,
                         height: 24,
-                        color: Colors.white,
+                        color: LightColorTheme.mainColor,
                       ),
                     ),
                   ),
@@ -383,34 +540,49 @@ class _MusicPlayerState extends State<MusicPlayer>
                 SizedBox(
                   height: 100, // Fixed height for lyrics container
                   child: SingleChildScrollView(
+                    controller: _lyricsScrollController,
+                    physics: const ClampingScrollPhysics(),
                     child: Column(
                       children: [
-                        // Show first 4 lines from full lyrics for preview
-                        ...fullLyrics
-                            .take(4)
+                        // Using consistent padding to avoid uneven line spacing
+                        ...song.lyrics
+                            .split('\n')
                             .map(
                               (line) => Padding(
-                                padding: const EdgeInsets.only(bottom: 6),
-                                child: Text(
-                                  line,
-                                  textAlign: TextAlign.center,
-                                  style: LightTextTheme.paragraph3.copyWith(
-                                    color: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                ),
+                                child: AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 300),
+                                  style:
+                                      song.lyrics.split('\n').indexOf(line) ==
+                                              _activeLyricIndex
+                                          ? LightTextTheme.paragraph2.copyWith(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            height: 1.5,
+                                            fontWeight:
+                                                LightTextTheme
+                                                    .semibold
+                                                    .fontWeight,
+                                          )
+                                          : LightTextTheme.paragraph2.copyWith(
+                                            color: Colors.white.withOpacity(
+                                              0.5,
+                                            ),
+                                            fontSize: 16,
+                                            height: 1.5,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                  child: Text(
+                                    line,
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
                             ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Nhấn để xem lời bài hát đầy đủ',
-                  style: LightTextTheme.paragraph3.copyWith(
-                    color: Colors.white70,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 12,
                   ),
                 ),
               ],
@@ -446,10 +618,10 @@ class _MusicPlayerState extends State<MusicPlayer>
             ),
             const SizedBox(height: 4),
             Text('Ca sĩ: ${song.artist}', style: LightTextTheme.paragraph3),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _buildActionIcons(screenWidth),
             _buildSlider(song, screenWidth),
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
             _buildSongControls(song),
           ],
         ),
@@ -477,37 +649,42 @@ class _MusicPlayerState extends State<MusicPlayer>
   );
 
   Widget _buildSlider(MusicData song, double screenWidth) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          _formatTime(currentPosition.toInt()),
-          style: LightTextTheme.paragraph3,
-        ),
-        SizedBox(
-          width: 0.64 * screenWidth,
-          child: SfSlider(
-            min: 0.0,
-            max: song.duration.inSeconds.toDouble(),
-            value: currentPosition,
-            activeColor: LightColorTheme.mainColor,
-            showTicks: true,
-            thumbIcon: Container(
-              width: 5,
-              height: 5,
-              decoration: const BoxDecoration(
-                color: LightColorTheme.mainColor,
-                shape: BoxShape.circle,
-              ),
-            ),
-            onChanged: (value) => setState(() => currentPosition = value),
+    return Container(
+      width: 0.8 * MediaQuery.of(context).size.width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            _formatTime(currentPosition.toInt()),
+            style: LightTextTheme.paragraph3,
           ),
-        ),
-        Text(
-          _formatTime(song.duration.inSeconds),
-          style: LightTextTheme.paragraph3,
-        ),
-      ],
+          SizedBox(
+            width: 0.65 * screenWidth,
+            child: SfSlider(
+              min: 0.0,
+              max: song.duration.inSeconds.toDouble(),
+              value: currentPosition,
+              activeColor: LightColorTheme.mainColor,
+              showTicks: true,
+              thumbIcon: Container(
+                width: 5,
+                height: 5,
+                decoration: const BoxDecoration(
+                  color: LightColorTheme.mainColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+
+              //custom slide
+              onChanged: (value) => setState(() => currentPosition = value),
+            ),
+          ),
+          Text(
+            _formatTime(song.duration.inSeconds),
+            style: LightTextTheme.paragraph3,
+          ),
+        ],
+      ),
     );
   }
 
@@ -518,44 +695,109 @@ class _MusicPlayerState extends State<MusicPlayer>
   }
 
   Widget _buildSongControls(MusicData song) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SvgPicture.asset(ImageTheme.replayIcon, width: 30),
-        SvgPicture.asset(ImageTheme.prevSongIcon, width: 30),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              isPlaying = !isPlaying;
-              isPlaying ? startProgress(song) : stopProgress();
-              isPlaying
-                  ? _rotationController.repeat()
-                  : _rotationController.stop();
-            });
-          },
-          child: Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: LightColorTheme.mainColor,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Center(
-              child: SvgPicture.asset(
-                isPlaying ? ImageTheme.playIcon : ImageTheme.stopIcon,
-                width: 22,
-                height: 22,
+    return Container(
+      width: 0.8 * MediaQuery.of(context).size.width,
+      // width:
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Replay song button
+          GestureDetector(
+            onTap: () {
+              // Handle replay button tap
+              setState(() {
+                // Reset song position to beginning
+                currentPosition = 0.0;
+                if (isPlaying) {
+                  // If already playing, restart from beginning
+                  stopProgress();
+                  startProgress(song);
+                }
+              });
+            },
+            child: SvgPicture.asset(ImageTheme.replayIcon, width: 30),
+          ),
+
+          // Previous song button
+          GestureDetector(
+            onTap: () {
+              // Handle previous song button tap
+              // In a real app, you would navigate to the previous song
+              getPreviousMusic(song.id);
+            },
+            child: SvgPicture.asset(ImageTheme.prevSongIcon, width: 30),
+          ),
+
+          // Play/Pause button
+          GestureDetector(
+            onTap: () {
+              // Handle play/pause button tap
+              setState(() {
+                if (isPlaying) {
+                  stopProgress();
+                  _rotationController.stop();
+                } else {
+                  startProgress(song);
+                  _rotationController.repeat();
+                }
+                isPlaying = !isPlaying;
+              });
+            },
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: LightColorTheme.mainColor,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  isPlaying ? ImageTheme.playIcon : ImageTheme.stopIcon,
+                  width: 22,
+                  height: 22,
+                ),
               ),
             ),
           ),
-        ),
-        SvgPicture.asset(ImageTheme.nextSongIcon, width: 30),
-        SvgPicture.asset(
-          ImageTheme.libraryIcon,
-          width: 30,
-          color: LightColorTheme.black,
-        ),
-      ],
+
+          // Next song button
+          GestureDetector(
+            onTap: () {
+              // Handle next song button tap
+              // In a real app, you would navigate to the next song
+              // For demo purposes, let's just finish the current song
+              getNextMusic(song.id);
+            },
+            child: SvgPicture.asset(ImageTheme.nextSongIcon, width: 30),
+          ),
+
+          // Library button
+          GestureDetector(
+            onTap: () {
+              // Handle library button tap
+              // For example, show a modal with song playlist or library options
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                builder:
+                    (context) => LibraryTab(
+                      name: song.name,
+                      imageUrl: song.albumArt,
+                      singer: song.artist,
+                    ),
+              );
+            },
+            child: SvgPicture.asset(
+              ImageTheme.libraryIcon,
+              width: 30,
+              color: LightColorTheme.black,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

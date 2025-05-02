@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:MELODY/theme/custom_themes/color_theme.dart';
 
 class GoBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -9,18 +10,14 @@ class GoBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed ?? () => Navigator.pop(context),
-      child: Hero(
-        tag: 'goBackButton',
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            // border: Border.all(color: Colors.grey.shade300),
-            color: Colors.white,
-            backgroundBlendMode: BlendMode.overlay,
-          ),
-          child: const Icon(Icons.arrow_back, size: 20),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          backgroundBlendMode: BlendMode.overlay,
         ),
+        child: Icon(Icons.arrow_back, size: 20, color: LightColorTheme.black),
       ),
     );
   }

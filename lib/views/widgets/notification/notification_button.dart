@@ -15,18 +15,22 @@ class NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onPressed,
-      child: SizedBox(
-        width: 45, // Ensure there's enough space
-        height: 45,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.8),
+          backgroundBlendMode: BlendMode.overlay,
+        ),
         child: Stack(
           alignment: Alignment.center,
           children: [
             SvgPicture.asset(
               ImageTheme.notification,
-              width: 25,
-              height: 25,
+              width: 20,
+              height: 20,
               colorFilter: ColorFilter.mode(
                 LightColorTheme.black,
                 BlendMode.srcIn,
@@ -35,15 +39,15 @@ class NotificationButton extends StatelessWidget {
 
             if (hasNewNotification)
               Positioned(
-                right: 8,
-                top: 8,
+                right: 0,
+                top: 0,
                 child: Container(
-                  width: 14,
-                  height: 14,
+                  width: 10,
+                  height: 10,
                   decoration: BoxDecoration(
                     color: LightColorTheme.mainColor,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
+                    border: Border.all(color: Colors.white, width: 1),
                   ),
                 ),
               ),
