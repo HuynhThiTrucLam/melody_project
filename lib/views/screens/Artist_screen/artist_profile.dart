@@ -47,6 +47,7 @@ class _ArtistProfileState extends State<ArtistProfile> {
 
         // Handle error state
         if (snapshot.hasError || snapshot.data == null) {
+          print("Error loading artist: ${snapshot.error}");
           return NotFound(
             title: 'Không tìm thấy bài hát',
             message: 'Có lỗi xảy ra khi tải bài hát này.',
@@ -55,42 +56,75 @@ class _ArtistProfileState extends State<ArtistProfile> {
 
         // If we have data, proceed normally
         final artist = snapshot.data!;
+        print("Artist loaded: ${artist.name}, avatar: ${artist.avatarUrl}");
 
         final screenHeight = MediaQuery.of(context).size.height;
         final screenWidth = MediaQuery.of(context).size.width;
 
         return Scaffold(
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              _buildBackgroundImage(artist.avatarUrl, screenHeight),
-              _buildTopBar(),
-              _buildBottomDetailContainer(artist, screenWidth),
-            ],
+          backgroundColor: Colors.white,
+          body: SizedBox(
+            height: screenHeight,
+            width: screenWidth,
+            child: Stack(
+              fit: StackFit.expand, // Make stack take full space
+              children: [
+                // Background color in case image fails
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: screenHeight * 0.7,
+                  child: Container(color: Colors.grey[200]),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: screenHeight * 0.7,
+                  child: _buildBackgroundImage(artist.avatarUrl),
+                ),
+                _buildTopBar(),
+                _buildBottomDetailContainer(artist, screenWidth),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildBackgroundImage(String albumArt, double height) {
-    return SizedBox(
-      height: height,
-      child: SizedBox(
-        // duration: const Duration(milliseconds: 600),
-        // curve: Curves.easeInOut,
-        height: height * 0.7, // 70% of the screen height
-        width: double.infinity,
-
-        child: Image.network(
+  Widget _buildBackgroundImage(String albumArt) {
+    return albumArt.isNotEmpty
+        ? Image.network(
           albumArt,
           fit: BoxFit.cover,
-          errorBuilder:
-              (_, __, ___) =>
-                  Container(height: 0.7 * height, color: Colors.grey[300]),
-        ),
-      ),
-    );
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                color: LightColorTheme.mainColor,
+              ),
+            );
+          },
+          errorBuilder: (_, error, __) {
+            print("Error loading image: $error");
+            return Container(
+              color: Colors.grey[400],
+              child: Center(
+                child: Icon(Icons.broken_image, size: 50, color: Colors.white),
+              ),
+            );
+          },
+        )
+        : Center(
+          child: Icon(Icons.image_not_supported, size: 50, color: Colors.white),
+        );
   }
 
   Widget _buildTopBar() {
