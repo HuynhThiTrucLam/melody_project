@@ -33,4 +33,6 @@ class ImageTheme {
   static const String nextSongIcon = "assets/icons/nextSongIcon.svg";
   static const String notFoundIcon = "assets/icons/not-found.svg";
   static const String topArrowIcon = "assets/icons/top-arrow.svg";
+  static const String threeDocIcon = "assets/icons/three-doc.svg";
+  static const String playBorderIcon = "assets/icons/play-border.svg";
 }

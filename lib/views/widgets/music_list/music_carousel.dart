@@ -9,12 +9,14 @@ class MusicCarousel extends StatefulWidget {
   final List<dynamic> items; // MusicData or AlbumData
   final MediaType type;
   final String title;
+  final int? headingSize;
 
   const MusicCarousel({
     Key? key,
     required this.items,
     required this.type,
     required this.title,
+    this.headingSize,
   }) : super(key: key);
 
   @override
@@ -35,7 +37,16 @@ class _MusicCarouselState extends State<MusicCarousel> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(widget.title, style: LightTextTheme.headding2),
+            // Title if have heading size
+            if (widget.headingSize != null)
+              Text(
+                widget.title,
+                style: LightTextTheme.headding2.copyWith(
+                  fontSize: widget.headingSize!.toDouble(),
+                ),
+              )
+            else
+              Text(widget.title, style: LightTextTheme.headding2),
             AnimatedSmoothIndicator(
               activeIndex: activeIndex,
               count: dotCount,

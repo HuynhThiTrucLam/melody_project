@@ -8,6 +8,8 @@ class ArtistData {
   final int followers;
   final int listeners;
   final String comeFrom;
+  bool isFollowed;
+  final String? description;
   final List<BlockData> songs;
   final List<BlockData> albums;
 
@@ -19,6 +21,8 @@ class ArtistData {
     required this.followers,
     required this.listeners,
     required this.comeFrom,
+    required this.isFollowed,
+    this.description,
     required this.songs,
     required this.albums,
   });
@@ -35,31 +39,35 @@ class ArtistDataList {
       followers: 12000000,
       listeners: 22000000,
       comeFrom: 'USA',
+      isFollowed: true,
       songs: [
         BlockData(
+          id: '1',
           name: 'Believer',
           subText: 'Imagine Dragons',
           listener: '20000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b273b8e93a4f4372a81332927d47',
+              'https://i1.sndcdn.com/artworks-000570164507-8bew6z-t500x500.jpg',
           isVerified: true,
         ),
         BlockData(
+          id: '2',
           name: 'Radioactive',
           subText: 'Imagine Dragons',
           listener: '18000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b2738e8a089a1bb24d4a5a1eb9a4',
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRohg4a3Qi8PCLAqt112qKhl1kocq0NzjtwPw&s',
           isVerified: true,
         ),
       ],
       albums: [
         BlockData(
+          id: '3',
           name: 'Evolve',
           subText: 'Album • Imagine Dragons',
           listener: '5000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b273f3d26e284b1d95e51211e418',
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzSJhMBBueB_69bdpJ-q-PR9eS8ZRIJXmHzQ&s',
           isVerified: true,
         ),
       ],
@@ -73,31 +81,56 @@ class ArtistDataList {
       followers: 7500000,
       listeners: 12000000,
       comeFrom: 'Vietnam',
+      isFollowed: true,
+      description:
+          'Sơn Tùng M-TP is a Vietnamese singer-songwriter and actor. He is known for his unique style and has a massive fan following in Vietnam and beyond. His music often blends pop, hip-hop, and R&B elements.',
+
       songs: [
         BlockData(
+          id: '4',
           name: 'Hãy Trao Cho Anh',
           subText: 'Sơn Tùng M-TP',
           listener: '9000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b27354b85f71e89c7c6a343e4223',
+              'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2019/7/1/741911/Hay-Trao-Cho-Anh.jpg',
           isVerified: true,
         ),
         BlockData(
+          id: '5',
           name: 'Chúng Ta Không Thuộc Về Nhau',
           subText: 'Sơn Tùng M-TP',
           listener: '7000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b273a0ccdfb7c52d194ce49b7650',
+              'https://avatar-ex-swe.nixcdn.com/mv/2016/08/04/c/e/1/9/1470277194346_640.jpg',
           isVerified: true,
         ),
       ],
       albums: [
         BlockData(
-          name: 'M-TP M-TP',
+          id: '6',
+          name: 'Đừng Làm Trái Tim Anh Đau',
           subText: 'Album • Sơn Tùng M-TP',
           listener: '3000000',
           avatarUrl:
-              'https://i.scdn.co/image/ab67616d0000b273116993bc3a28b3e3644e84c7',
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
+          isVerified: true,
+        ),
+        BlockData(
+          id: '7',
+          name: 'Đừng Làm Trái Tim Anh Đau',
+          subText: 'Album • Sơn Tùng M-TP',
+          listener: '3000000',
+          avatarUrl:
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
+          isVerified: true,
+        ),
+        BlockData(
+          id: '8',
+          name: 'Đừng Làm Trái Tim Anh Đau',
+          subText: 'Album • Sơn Tùng M-TP',
+          listener: '3000000',
+          avatarUrl:
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
           isVerified: true,
         ),
       ],
@@ -112,8 +145,10 @@ class ArtistDataList {
       followers: 8900000,
       listeners: 14500000,
       comeFrom: 'South Korea',
+      isFollowed: false,
       songs: [
         BlockData(
+          id: '9',
           name: 'Blueming',
           subText: 'IU',
           listener: '10000000',
@@ -122,6 +157,7 @@ class ArtistDataList {
           isVerified: true,
         ),
         BlockData(
+          id: '10',
           name: 'Celebrity',
           subText: 'IU',
           listener: '9500000',
@@ -132,6 +168,7 @@ class ArtistDataList {
       ],
       albums: [
         BlockData(
+          id: '5',
           name: 'LILAC',
           subText: 'Album • IU',
           listener: '4000000',

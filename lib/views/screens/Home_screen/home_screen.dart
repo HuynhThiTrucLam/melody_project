@@ -180,6 +180,7 @@ class HomeScreen extends StatelessWidget {
               type: MediaType.album,
               title: "Album nổi bật",
             ),
+            const SizedBox(height: 100),
           ],
         ),
       ),

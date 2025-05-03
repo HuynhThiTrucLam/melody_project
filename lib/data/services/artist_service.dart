@@ -14,4 +14,25 @@ class ArtistService {
       throw Exception("Artist with ID $id not found");
     }
   }
+
+  // Set follow status
+  Future<void> setFollowStatus(String artistId, bool isFollowed) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Update the follow status of the artist
+    final artist = ArtistDataList.mockArtists.firstWhere(
+      (artist) => artist.id == artistId,
+    );
+    artist.isFollowed = isFollowed;
+  }
+
+  // Get similar artists
+  Future<List<ArtistData>> getSimilarArtists(String artistId) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Return a list of similar artists
+    return ArtistDataList.mockArtists.toList();
+  }
 }

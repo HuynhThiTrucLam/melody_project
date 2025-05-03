@@ -1,10 +1,7 @@
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/widgets/artist_list/artist_item.dart';
-import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class LibraryTab extends StatefulWidget {
   final String? name;
@@ -30,6 +27,16 @@ class _LibraryTabState extends State<LibraryTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 3,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
           // Title
           Text("Đang phát", style: LightTextTheme.headding3),
           const SizedBox(height: 8),
@@ -44,10 +51,7 @@ class _LibraryTabState extends State<LibraryTab> {
 
           const SizedBox(height: 32),
 
-          Text(
-            "Thêm bài hát vào Playlist của tôi",
-            style: LightTextTheme.headding3,
-          ),
+          Text("Thêm bài hát vào Playlist", style: LightTextTheme.headding3),
           const SizedBox(height: 16),
 
           // Playlist

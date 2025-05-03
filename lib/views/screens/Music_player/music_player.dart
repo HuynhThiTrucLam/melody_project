@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:MELODY/data/models/UI/lyric_line.dart';
 import 'package:MELODY/views/screens/Music_player/library_tab.dart';
 import 'package:MELODY/views/widgets/not_found/not_found.dart';
 import 'package:flutter/material.dart';
