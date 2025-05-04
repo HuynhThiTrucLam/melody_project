@@ -3,9 +3,9 @@ import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/data/services/artist_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
-import 'package:MELODY/views/screens/Artist_screen/albums_carousel.dart';
-import 'package:MELODY/views/screens/Artist_screen/similar_artist_carousel.dart';
-import 'package:MELODY/views/screens/Artist_screen/songs_carousel.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/albums_carousel.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/similar_artist_carousel.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/songs_carousel.dart';
 import 'package:MELODY/views/screens/Notification_screen/notification_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
@@ -268,7 +268,7 @@ class _ArtistProfileState extends State<ArtistProfile> {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            artist.comeFrom,
+                            artist.comeFrom.name,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],

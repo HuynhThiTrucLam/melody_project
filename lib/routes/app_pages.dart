@@ -1,8 +1,7 @@
 import 'package:MELODY/routes/app_routes.dart';
-import 'package:MELODY/views/screens/Artist_screen/Artist_profile.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/artist_profile.dart';
 import 'package:MELODY/views/screens/Base_screen/base_screen.dart';
 import 'package:MELODY/views/screens/Music_player/music_player.dart';
-import 'package:MELODY/views/screens/Home_screen/home_screen.dart';
 import 'package:MELODY/views/screens/Top_trending/top_trending_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/introduction_screen.dart';

@@ -35,4 +35,22 @@ class ArtistService {
     // Return a list of similar artists
     return ArtistDataList.mockArtists.toList();
   }
+
+  // Get artist's top tracks
+  Future<List<ArtistData>> getTopArtist() async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    return ArtistDataList.mockArtists.toList();
+  }
+
+  // Get artist treding by region
+  Future<List<ArtistData>> getArtistByRegion(String region) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    return ArtistDataList.mockArtists
+        .where((artist) => artist.comeFrom.code.toUpperCase() == region)
+        .toList();
+  }
 }

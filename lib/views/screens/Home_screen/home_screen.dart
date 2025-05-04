@@ -4,6 +4,7 @@ import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/views/screens/Producer_screen/producer_screen.dart';
 import 'package:MELODY/views/screens/Top_trending/top_trending_screen.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
 import 'package:MELODY/views/widgets/artist_list/artist_carousel.dart';
@@ -107,13 +108,14 @@ class HomeScreen extends StatelessWidget {
                             vertical: 5,
                           ), // Add padding for shadows
                           itemBuilder: (context, index) {
+                            final tag = tags[index];
                             return Padding(
                               padding: EdgeInsets.only(
                                 left: index == 0 ? 0 : 16,
                                 right: index == tags.length - 1 ? 0 : 0,
                               ),
                               child: TagButton(
-                                label: tags[index].name,
+                                label: tag.name,
                                 backgroundColor:
                                     index == 0
                                         ? LightColorTheme.mainColor
@@ -128,14 +130,44 @@ class HomeScreen extends StatelessWidget {
                                   vertical: 10,
                                 ),
                                 textSize: 14,
-                                onClick: (tag) {
-                                  // Navigate to search screen with the selected tag
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TopTrendingScreen(),
-                                    ),
-                                  );
+                                onClick: (tagName) {
+                                  print('Clicked tag: $tagName');
+                                  // // Handle navigation based on tag name
+                                  // if (tag.name == "Tất cả") {
+                                  //   Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => HomeScreen(),
+                                  //     ),
+                                  //   );
+                                  // } else
+                                  if (tag.name == "Top trending") {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => TopTrendingScreen(),
+                                      ),
+                                    );
+                                  } else if (tag.name == "Nghệ sĩ/Producer") {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const ProducerScreen(),
+                                      ),
+                                    );
+                                  } else if (tag.name == "Albums") {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => SearchScreen(
+                                              initialQuery: tag.name,
+                                            ),
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
                             );

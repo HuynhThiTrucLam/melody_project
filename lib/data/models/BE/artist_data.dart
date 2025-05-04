@@ -1,4 +1,5 @@
 import 'package:MELODY/data/models/UI/block_data.dart';
+import 'package:MELODY/data/models/UI/fiter_tab.dart';
 
 class ArtistData {
   final String id;
@@ -7,7 +8,7 @@ class ArtistData {
   final bool isVerified;
   final int followers;
   final int listeners;
-  final String comeFrom;
+  final Filter comeFrom;
   bool isFollowed;
   final String? description;
   final List<BlockData> songs;
@@ -38,7 +39,7 @@ class ArtistDataList {
       isVerified: true,
       followers: 12000000,
       listeners: 22000000,
-      comeFrom: 'USA',
+      comeFrom: Filter(code: 'usuk', name: 'US/UK'),
       isFollowed: true,
       songs: [
         BlockData(
@@ -80,7 +81,7 @@ class ArtistDataList {
       isVerified: true,
       followers: 7500000,
       listeners: 12000000,
-      comeFrom: 'Vietnam',
+      comeFrom: Filter(code: 'vietnam', name: 'Vietnam'),
       isFollowed: true,
       description:
           'Sơn Tùng M-TP is a Vietnamese singer-songwriter and actor. He is known for his unique style and has a massive fan following in Vietnam and beyond. His music often blends pop, hip-hop, and R&B elements.',
@@ -144,7 +145,7 @@ class ArtistDataList {
       isVerified: true,
       followers: 8900000,
       listeners: 14500000,
-      comeFrom: 'South Korea',
+      comeFrom: Filter(code: 'kpop', name: 'K-Pop'),
       isFollowed: false,
       songs: [
         BlockData(

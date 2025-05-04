@@ -1,23 +1,23 @@
-import 'package:MELODY/data/models/BE/music_data.dart';
+import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/data/models/UI/fiter_tab.dart';
-import 'package:MELODY/data/services/music_service.dart';
+import 'package:MELODY/data/services/artist_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/views/screens/Top_trending/trending_list.dart';
+import 'package:MELODY/views/screens/Producer_screen/producer_list.dart';
 import 'package:MELODY/views/widgets/layout/base_layout.dart';
 import 'package:flutter/material.dart';
 
-class TopTrendingScreen extends StatefulWidget {
-  const TopTrendingScreen({super.key});
+class ProducerScreen extends StatefulWidget {
+  const ProducerScreen({super.key});
 
   @override
-  State<TopTrendingScreen> createState() => _TopTrendingScreenState();
+  State<ProducerScreen> createState() => _ProducerScreenState();
 }
 
-class _TopTrendingScreenState extends State<TopTrendingScreen>
+class _ProducerScreenState extends State<ProducerScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Future<List<MusicData>> topTrendingFuture;
-  final MusicService _musicService = MusicService();
+  late Future<List<ArtistData>> producersFuture;
+  final ArtistService _artistService = ArtistService();
 
   late Filter _currentFilter;
 
@@ -33,57 +33,43 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: _filters.length, vsync: this);
+    _currentFilter = _filters[0]; // Initialize with first filter
+    producersFuture = _artistService.getTopArtist(); // Initial data load
 
-    // Initialize _currentFilter with the first filter
-    _currentFilter = _filters[0];
-
-    // Add listener to tab controller
-    _tabController.addListener(_handleTabChange);
-
-    // Initial data load based on the filter
-    topTrendingFuture = _musicService.getTopTrendingMusics();
+    _tabController.addListener(
+      _handleTabChange,
+    ); // Add listener for tab changes
   }
 
+  // Handle tab changes and update the data based on the selected filter
   void _handleTabChange() {
-    // Only handle the event when tab selection actually changes
-    if (!_tabController.indexIsChanging) {
-      return;
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _currentFilter = _filters[_tabController.index];
+        print(_currentFilter.code);
+
+        switch (_currentFilter.code) {
+          case "all":
+            producersFuture = _artistService.getTopArtist();
+            break;
+          case "vietnam":
+            producersFuture = _artistService.getArtistByRegion("vietnam");
+            break;
+          case "usuk":
+            producersFuture = _artistService.getArtistByRegion("usuk");
+            break;
+          case "kpop":
+            producersFuture = _artistService.getArtistByRegion("kpop");
+            break;
+          default:
+            producersFuture = _artistService.getTopArtist();
+        }
+      });
     }
-
-    // Update the current filter based on selected tab
-    setState(() {
-      _currentFilter = _filters[_tabController.index];
-
-      print(_currentFilter.code);
-      // Update the future based on selected filter
-      switch (_currentFilter.code) {
-        case "all":
-          topTrendingFuture = _musicService.getTopTrendingMusics();
-          break;
-        case "vietnam":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "vietnam",
-          );
-          break;
-        case "usuk":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "usuk",
-          );
-          break;
-        case "kpop":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "kpop",
-          );
-          break;
-        default:
-          topTrendingFuture = _musicService.getTopTrendingMusics();
-      }
-    });
   }
 
   @override
   void dispose() {
-    // Remove listener before disposing
     _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
@@ -120,8 +106,8 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
 
           // Music List
           Expanded(
-            child: TrendingList(
-              topTrendingFuture: topTrendingFuture,
+            child: ProducerList(
+              artistFuture: producersFuture,
             ), // Pass the Future here
           ),
         ],

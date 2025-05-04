@@ -1,6 +1,6 @@
 import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
-import 'package:MELODY/views/screens/Artist_screen/Artist_profile.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/Artist_profile.dart';
 import 'package:carousel_slider/carousel_slider.dart' as carousel;
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

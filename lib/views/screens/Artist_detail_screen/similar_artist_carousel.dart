@@ -1,6 +1,6 @@
 import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/views/screens/Artist_screen/artist_profile.dart';
+import 'package:MELODY/views/screens/Artist_detail_screen/Artist_profile.dart';
 import 'package:flutter/material.dart';
 
 class SimilarArtistCarousel extends StatelessWidget {
@@ -131,7 +131,7 @@ class ArtistCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 2),
                   Text(
-                    artistData.comeFrom,
+                    artistData.comeFrom.name,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
