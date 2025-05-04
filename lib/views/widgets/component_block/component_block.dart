@@ -214,6 +214,8 @@ class BlockItem extends StatelessWidget {
                 backgroundColor: LightColorTheme.mainColor,
                 textColor: LightColorTheme.white,
                 borderRadius: BorderRadius.circular(24),
+                onClick:
+                    onButtonPressed != null ? (_) => onButtonPressed!() : null,
               ),
             ],
 

@@ -1,26 +1,26 @@
-import 'package:MELODY/data/models/BE/artist_data.dart';
+import 'package:MELODY/data/models/BE/album_data.dart';
 import 'package:MELODY/data/models/UI/fiter_tab.dart';
-import 'package:MELODY/data/services/artist_service.dart';
+import 'package:MELODY/data/services/album_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
-import 'package:MELODY/views/screens/Producer_screen/producer_list.dart';
+import 'package:MELODY/views/screens/Albums_screen.dart/albums_list.dart';
 import 'package:MELODY/views/widgets/layout/base_layout.dart';
 import 'package:MELODY/views/widgets/search_bar/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ProducerScreen extends StatefulWidget {
-  const ProducerScreen({super.key});
+class AlbumsScreen extends StatefulWidget {
+  const AlbumsScreen({super.key});
 
   @override
-  State<ProducerScreen> createState() => _ProducerScreenState();
+  State<AlbumsScreen> createState() => _AlbumsScreenState();
 }
 
-class _ProducerScreenState extends State<ProducerScreen>
+class _AlbumsScreenState extends State<AlbumsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Future<List<ArtistData>> producersFuture;
-  final ArtistService _artistService = ArtistService();
+  late Future<List<AlbumData>> albumsFuture;
+  final AlbumService _albumService = AlbumService();
 
   late Filter _currentFilter;
 
@@ -36,43 +36,51 @@ class _ProducerScreenState extends State<ProducerScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: _filters.length, vsync: this);
-    _currentFilter = _filters[0]; // Initialize with first filter
-    producersFuture = _artistService.getTopArtist(); // Initial data load
 
-    _tabController.addListener(
-      _handleTabChange,
-    ); // Add listener for tab changes
+    // Initialize _currentFilter with the first filter
+    _currentFilter = _filters[0];
+
+    // Add listener to tab controller
+    _tabController.addListener(_handleTabChange);
+
+    // Initial data load based on the filter
+    albumsFuture = _albumService.getTopAlbums();
   }
 
-  // Handle tab changes and update the data based on the selected filter
   void _handleTabChange() {
-    if (_tabController.indexIsChanging) {
-      setState(() {
-        _currentFilter = _filters[_tabController.index];
-        print(_currentFilter.code);
-
-        switch (_currentFilter.code) {
-          case "all":
-            producersFuture = _artistService.getTopArtist();
-            break;
-          case "vietnam":
-            producersFuture = _artistService.getArtistByRegion("vietnam");
-            break;
-          case "usuk":
-            producersFuture = _artistService.getArtistByRegion("usuk");
-            break;
-          case "kpop":
-            producersFuture = _artistService.getArtistByRegion("kpop");
-            break;
-          default:
-            producersFuture = _artistService.getTopArtist();
-        }
-      });
+    // Only handle the event when tab selection actually changes
+    if (!_tabController.indexIsChanging) {
+      return;
     }
+
+    // Update the current filter based on selected tab
+    setState(() {
+      _currentFilter = _filters[_tabController.index];
+
+      print(_currentFilter.code);
+      // Update the future based on selected filter
+      switch (_currentFilter.code) {
+        case "all":
+          albumsFuture = _albumService.getTopAlbums();
+          break;
+        case "vietnam":
+          albumsFuture = _albumService.getTopAlbumsByRegion("vietnam");
+          break;
+        case "usuk":
+          albumsFuture = _albumService.getTopAlbumsByRegion("usuk");
+          break;
+        case "kpop":
+          albumsFuture = _albumService.getTopAlbumsByRegion("kpop");
+          break;
+        default:
+          albumsFuture = _albumService.getTopAlbums();
+      }
+    });
   }
 
   @override
   void dispose() {
+    // Remove listener before disposing
     _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
@@ -104,7 +112,6 @@ class _ProducerScreenState extends State<ProducerScreen>
               ),
             ],
           ),
-
           SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,10 +150,10 @@ class _ProducerScreenState extends State<ProducerScreen>
           ),
           SizedBox(height: 16),
 
-          // Music List
+          // Albums List
           Expanded(
-            child: ProducerList(
-              artistFuture: producersFuture,
+            child: AlbumsList(
+              albumsFuture: albumsFuture,
             ), // Pass the Future here
           ),
         ],

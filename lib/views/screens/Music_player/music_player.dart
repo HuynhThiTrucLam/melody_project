@@ -5,6 +5,7 @@ import 'package:MELODY/views/screens/Music_player/library_tab.dart';
 import 'package:MELODY/views/widgets/not_found/not_found.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import 'package:MELODY/data/models/BE/music_data.dart';
@@ -638,7 +639,17 @@ class _MusicPlayerState extends State<MusicPlayer>
         children: [
           _icon(ImageTheme.heartIcon),
           _icon(ImageTheme.downloadIcon),
-          _icon(ImageTheme.shareIcon),
+          IconButton(
+            onPressed: () {
+              print(" Share button pressed");
+              Share.share(
+                'Check out this song: ${widget.musicId}',
+                subject: 'Song Details',
+              );
+              print("Share button pressed 2");
+            },
+            icon: Icon(Icons.share, color: LightColorTheme.black, size: 24),
+          ),
         ],
       ),
     );

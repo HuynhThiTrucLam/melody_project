@@ -71,16 +71,7 @@ class _MusicCarouselState extends State<MusicCarousel> {
           itemCount: widget.items.length,
           itemBuilder: (context, index, realIndex) {
             final item = widget.items[index];
-            return MusicListItem(
-              item: item,
-              type: widget.type,
-              onTap: () {
-                // You can pass a callback if needed
-                print(
-                  "Tapped on ${widget.type == MediaType.song ? item.name : item.title}",
-                );
-              },
-            );
+            return MusicListItem(item: item, type: widget.type, onTap: () {});
           },
           options: carousel.CarouselOptions(
             height: 250,

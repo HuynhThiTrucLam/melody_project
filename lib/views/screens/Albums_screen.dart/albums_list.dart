@@ -1,18 +1,19 @@
-import 'package:MELODY/data/models/BE/artist_data.dart';
+import 'package:MELODY/data/models/BE/album_data.dart';
+import 'package:MELODY/views/screens/Album_detail_screen/album_detail.dart';
 import 'package:MELODY/views/screens/Artist_detail_screen/Artist_profile.dart';
 import 'package:MELODY/views/screens/Top_trending/custom_block.dart';
 import 'package:MELODY/views/widgets/music_list/music_item.dart';
 import 'package:flutter/material.dart';
 
-class ProducerList extends StatelessWidget {
-  final Future<List<ArtistData>> artistFuture;
+class AlbumsList extends StatelessWidget {
+  final Future<List<AlbumData>> albumsFuture;
 
-  const ProducerList({super.key, required this.artistFuture});
+  const AlbumsList({super.key, required this.albumsFuture});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ArtistData>>(
-      future: artistFuture,
+    return FutureBuilder<List<AlbumData>>(
+      future: albumsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -24,7 +25,7 @@ class ProducerList extends StatelessWidget {
           return const Center(child: Text('No artist data available'));
         }
 
-        List<ArtistData> artistList = snapshot.data!;
+        List<AlbumData> albumsList = snapshot.data!;
 
         return GridView.builder(
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -34,12 +35,12 @@ class ProducerList extends StatelessWidget {
             childAspectRatio: 0.8,
           ),
           itemCount:
-              artistList.length +
-              ((artistList.length + 6) ~/ 6), // block every 6 items
+              albumsList.length +
+              ((albumsList.length + 6) ~/ 6), // block every 6 items
           itemBuilder: (context, index) {
             if (index % 7 == 0) {
               return CustomBlock(
-                title: "Nghệ sĩ nổi bật",
+                title: "Album nổi bật",
                 key: Key('block_$index'),
                 description:
                     "Nghệ sĩ nổi bật với sự ảnh hưởng mạnh mẽ trong ngành âm nhạc",
@@ -47,10 +48,10 @@ class ProducerList extends StatelessWidget {
             } else {
               int musicIndex = index - (index ~/ 7) - 1;
               // Prevent out-of-range error
-              if (musicIndex < 0 || musicIndex >= artistList.length) {
+              if (musicIndex < 0 || musicIndex >= albumsList.length) {
                 return const SizedBox.shrink();
               }
-              final music = artistList[musicIndex];
+              final albums = albumsList[musicIndex];
 
               // Determine the rank for the icon (1st, 2nd, 3rd)
               Widget topRankIcon = SizedBox.shrink();
@@ -59,14 +60,13 @@ class ProducerList extends StatelessWidget {
                 children: [
                   MusicListItem(
                     isOpenTag: false,
-                    item: music,
-                    type: MediaType.artist,
+                    item: albums,
+                    type: MediaType.album,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (context) => ArtistProfile(artistId: music.id),
+                          builder: (context) => AlbumDetail(albumId: albums.id),
                         ),
                       );
                     },

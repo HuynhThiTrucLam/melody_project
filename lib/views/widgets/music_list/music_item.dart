@@ -1,32 +1,13 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
-import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
+import 'package:MELODY/views/screens/Album_detail_screen/album_detail.dart';
 import 'package:MELODY/views/screens/Music_player/music_player.dart';
 import 'package:flutter/material.dart';
 
-enum MediaType { song, album }
-
-class MockSongDetailService {
-  static Future<MusicData> getSongDetail(String songId) async {
-    return MusicData(
-      id: '1',
-      name: 'Đừng làm trái tim anh đau',
-      artist: 'Sơn Tùng M-TP',
-      albumArt: 'https://i.ytimg.com/vi/7u4g483WTzw/hq720.jpg',
-      audioUrl: 'https://example.com/audio/dung_lam_trai_tim_anh_dau.mp3',
-      lyrics: 'Thấy thế thôi vui hơn có quà...',
-      duration: Duration(minutes: 3, seconds: 20),
-      listener: 1580000,
-      isFavorite: true,
-      genre: 'Synthwave',
-      releaseDate: DateTime(2020, 11, 29),
-      nation: "Việt Nam",
-    );
-  }
-}
+enum MediaType { song, album, artist } // Added artist type
 
 class MusicListItem extends StatelessWidget {
-  final dynamic item; // Can be MusicData or AlbumData
+  final dynamic item; // Can be MusicData, AlbumData, or ArtistData
   final VoidCallback onTap;
   final MediaType type;
   final bool? isOpenTag;
@@ -41,7 +22,6 @@ class MusicListItem extends StatelessWidget {
 
   void _handleTap(BuildContext context) {
     if (type == MediaType.song) {
-      // Remove all loading dialog code and directly navigate to the music player
       Navigator.push(
         context,
         PageRouteBuilder(
@@ -51,8 +31,17 @@ class MusicListItem extends StatelessWidget {
           transitionDuration: const Duration(milliseconds: 600),
         ),
       );
-    } else {
-      // Handle album tap
+    } else if (type == MediaType.album) {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder:
+              (context, animation, secondaryAnimation) =>
+                  AlbumDetail(albumId: item.id),
+          transitionDuration: const Duration(milliseconds: 600),
+        ),
+      );
+    } else if (type == MediaType.artist) {
       onTap();
     }
   }
@@ -60,15 +49,33 @@ class MusicListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Extract common properties based on item type
-    final String imageUrl =
-        type == MediaType.song ? item.albumArt : item.coverImage;
-    final String title = type == MediaType.song ? item.name : item.title;
-    final String subtitle =
-        type == MediaType.song ? item.artist : '${item.songCount} bài hát';
-    final int countValue =
-        type == MediaType.song ? item.listener : item.totalListens;
-    final String countLabel =
-        type == MediaType.song ? 'lượt nghe' : 'lượt nghe';
+    String imageUrl;
+    String title;
+    String subtitle;
+    String countLabel;
+    int countValue;
+
+    // Logic for different types
+    if (type == MediaType.song) {
+      imageUrl = item.albumArt;
+      title = item.name;
+      subtitle = item.artist;
+      countValue = item.listener;
+      countLabel = 'lượt nghe';
+    } else if (type == MediaType.album) {
+      imageUrl = item.coverImage;
+      title = item.title;
+      subtitle = '${item.songCount} bài hát';
+      countValue = item.totalListens;
+      countLabel = 'lượt nghe';
+    } else {
+      // type == MediaType.artist
+      imageUrl = item.avatarUrl;
+      title = item.name;
+      subtitle = item.isVerified ? 'Verified Artist' : 'Artist';
+      countValue = item.listeners;
+      countLabel = 'lượt nghe';
+    }
 
     return GestureDetector(
       onTap: () => _handleTap(context),
@@ -88,7 +95,11 @@ class MusicListItem extends StatelessWidget {
                   width: double.infinity,
                   color: LightColorTheme.grey.withOpacity(0.2),
                   child: Icon(
-                    type == MediaType.song ? Icons.music_note : Icons.album,
+                    type == MediaType.song
+                        ? Icons.music_note
+                        : type == MediaType.album
+                        ? Icons.album
+                        : Icons.person,
                     size: 50,
                     color: LightColorTheme.grey,
                   ),
@@ -132,7 +143,11 @@ class MusicListItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            type == MediaType.song ? 'Bài hát' : 'Album',
+                            type == MediaType.song
+                                ? 'Bài hát'
+                                : type == MediaType.album
+                                ? 'Album'
+                                : 'Nghệ sĩ', // Artist label
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
@@ -189,7 +204,7 @@ class MusicListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
 
-                  // Subtitle (artist or song count)
+                  // Subtitle (artist, song count, or artist status)
                   Text(
                     subtitle,
                     style: TextStyle(

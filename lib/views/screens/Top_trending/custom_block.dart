@@ -3,7 +3,14 @@ import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomBlock extends StatefulWidget {
-  const CustomBlock({super.key});
+  final String title; // Added title parameter
+  final String description;
+
+  const CustomBlock({
+    super.key,
+    required this.title,
+    required this.description,
+  }); // Constructor with title
 
   @override
   State<CustomBlock> createState() => _CustomBlockState();
@@ -28,9 +35,9 @@ class _CustomBlockState extends State<CustomBlock> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
+            // Title (now using the title passed from the constructor)
             Text(
-              'Top Trending',
+              widget.title, // Use widget.title to access the passed title
               style: LightTextTheme.headding2.copyWith(
                 color: Colors.black,
                 fontSize: 30, // Larger font for better impact
@@ -40,7 +47,7 @@ class _CustomBlockState extends State<CustomBlock> {
             const SizedBox(height: 8), // Space between title and content
             // Description
             Text(
-              'Discover the hottest trends in music and entertainment.',
+              widget.description,
               style: LightTextTheme.paragraph1.copyWith(
                 color: Colors.black54,
                 fontSize: 14,

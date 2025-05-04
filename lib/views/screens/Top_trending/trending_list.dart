@@ -39,7 +39,11 @@ class TrendingList extends StatelessWidget {
               ((musicList.length + 6) ~/ 6), // block every 6 items
           itemBuilder: (context, index) {
             if (index % 7 == 0) {
-              return CustomBlock(key: Key('block_$index'));
+              return CustomBlock(
+                key: Key('block_$index'),
+                title: "Top trending",
+                description: "Top những bài hát hot nhất hiện nay.",
+              );
             } else {
               int musicIndex = index - (index ~/ 7) - 1;
               // Prevent out-of-range error

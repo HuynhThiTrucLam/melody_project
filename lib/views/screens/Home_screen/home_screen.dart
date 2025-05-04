@@ -4,6 +4,7 @@ import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/views/screens/Albums_screen.dart/albums_screen.dart';
 import 'package:MELODY/views/screens/Producer_screen/producer_screen.dart';
 import 'package:MELODY/views/screens/Top_trending/top_trending_screen.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
@@ -20,11 +21,23 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   void onSearch(BuildContext context, String tag) {
-    // Handle search action
-    // For example, navigate to the search screen with the selected tag
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SearchScreen(initialQuery: tag)),
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 400),
+        pageBuilder:
+            (context, animation, secondaryAnimation) =>
+                SearchScreen(initialQuery: tag),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(0, 1), // Start from bottom
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(parent: animation, curve: Curves.slowMiddle),
+          );
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
     );
   }
 
@@ -48,10 +61,12 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           CustomSearchBar(
                             label: "Hot trending",
-                            svgLeftIcon: ImageTheme.topTrendingIcon,
+                            svgLeftIcon: ImageTheme.searchIcon,
+                            iconSize: 16,
                             backgroundColor: Colors.white,
                             textColor: LightColorTheme.grey,
                             iconColor: LightColorTheme.grey,
+
                             borderRadius: BorderRadius.circular(50),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -132,15 +147,6 @@ class HomeScreen extends StatelessWidget {
                                 textSize: 14,
                                 onClick: (tagName) {
                                   print('Clicked tag: $tagName');
-                                  // // Handle navigation based on tag name
-                                  // if (tag.name == "Tất cả") {
-                                  //   Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //       builder: (context) => HomeScreen(),
-                                  //     ),
-                                  //   );
-                                  // } else
                                   if (tag.name == "Top trending") {
                                     Navigator.push(
                                       context,
@@ -161,10 +167,7 @@ class HomeScreen extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder:
-                                            (context) => SearchScreen(
-                                              initialQuery: tag.name,
-                                            ),
+                                        builder: (context) => AlbumsScreen(),
                                       ),
                                     );
                                   }

@@ -49,6 +49,7 @@ dependencies:
   syncfusion_flutter_sliders: ^29.1.37
   lottie: ^1.0.1
   dio: ^5.0.0
+  share_plus: ^7.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

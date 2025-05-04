@@ -60,7 +60,10 @@ class CustomSearchBar extends StatelessWidget {
   BoxDecoration get _decoration => BoxDecoration(
     color: backgroundColor ?? Colors.white,
     borderRadius: borderRadius ?? BorderRadius.circular(1),
-    border: Border.all(color: LightColorTheme.grey, width: 0.5),
+    border: Border.all(
+      color: LightColorTheme.grey.withOpacity(0.3),
+      width: 0.5,
+    ),
   );
 
   @override
@@ -111,7 +114,7 @@ class CustomSearchBar extends StatelessWidget {
                           hintText: label,
                           hintStyle: TextStyle(
                             color: textColor ?? LightColorTheme.grey,
-                            fontWeight: LightTextTheme.medium.fontWeight,
+                            fontWeight: LightTextTheme.regular.fontWeight,
                           ),
                         ),
                       )
@@ -119,15 +122,9 @@ class CustomSearchBar extends StatelessWidget {
                         label,
                         style: TextStyle(
                           color: textColor ?? LightColorTheme.grey,
-                          fontWeight: LightTextTheme.medium.fontWeight,
+                          fontWeight: LightTextTheme.paragraph3.fontWeight,
                         ),
                       ),
-            ),
-            SvgPicture.asset(
-              ImageTheme.searchIcon,
-              width: svgIconSize?.width ?? iconSize,
-              height: svgIconSize?.height ?? iconSize,
-              color: iconColor,
             ),
           ],
         ),
