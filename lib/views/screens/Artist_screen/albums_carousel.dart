@@ -90,7 +90,7 @@ class AlbumCard extends StatelessWidget {
             Icon(Icons.headphones, color: LightColorTheme.grey, size: 10),
             const SizedBox(width: 4),
             Text(
-              '${formatListenerCount(int.parse(album.listener))} lượt nghe',
+              '${_formatListenerCount(album.listener)} lượt nghe',
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
@@ -101,5 +101,26 @@ class AlbumCard extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+// Helper method to safely parse and format listener count
+String _formatListenerCount(dynamic listenerValue) {
+  if (listenerValue == null) {
+    return formatListenerCount(0);
+  }
+
+  try {
+    // If it's already an int, use it directly
+    if (listenerValue is int) {
+      return formatListenerCount(listenerValue);
+    }
+
+    // If it's a string, parse it
+    final listenerCount = int.tryParse(listenerValue.toString()) ?? 0;
+    return formatListenerCount(listenerCount);
+  } catch (e) {
+    // Handle any parsing errors gracefully
+    return formatListenerCount(0);
   }
 }

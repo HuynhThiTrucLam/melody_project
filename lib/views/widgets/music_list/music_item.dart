@@ -20,6 +20,7 @@ class MockSongDetailService {
       isFavorite: true,
       genre: 'Synthwave',
       releaseDate: DateTime(2020, 11, 29),
+      nation: "Việt Nam",
     );
   }
 }
@@ -28,12 +29,14 @@ class MusicListItem extends StatelessWidget {
   final dynamic item; // Can be MusicData or AlbumData
   final VoidCallback onTap;
   final MediaType type;
+  final bool? isOpenTag;
 
   const MusicListItem({
     Key? key,
     required this.item,
     required this.onTap,
     required this.type,
+    this.isOpenTag = true,
   }) : super(key: key);
 
   void _handleTap(BuildContext context) {
@@ -118,28 +121,27 @@ class MusicListItem extends StatelessWidget {
                   Row(
                     children: [
                       // Media type pill
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              type == MediaType.song
-                                  ? LightColorTheme.mainColor
-                                  : LightColorTheme.grey.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          type == MediaType.song ? 'SONG' : 'ALBUM',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: LightColorTheme.white,
+                      if (isOpenTag == true) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: LightColorTheme.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            type == MediaType.song ? 'Bài hát' : 'Album',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: LightColorTheme.white,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
+                        const SizedBox(width: 8),
+                      ],
 
                       // Count pill
                       Container(

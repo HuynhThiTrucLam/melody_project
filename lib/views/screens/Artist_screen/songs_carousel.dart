@@ -75,7 +75,7 @@ class SongsCarousel extends StatelessWidget {
                 imageUrl: song.avatarUrl,
                 title: song.name,
                 subtext: song.listener,
-                shapeOfImage: 'square',
+                shapeOfImage: 'circle',
                 showButton: false,
                 showInfor: true,
                 onButtonPressed: () {

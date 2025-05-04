@@ -35,4 +35,5 @@ class ImageTheme {
   static const String topArrowIcon = "assets/icons/top-arrow.svg";
   static const String threeDocIcon = "assets/icons/three-doc.svg";
   static const String playBorderIcon = "assets/icons/play-border.svg";
+  static const String filterIcon = "assets/icons/filter.svg";
 }

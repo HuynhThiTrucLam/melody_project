@@ -74,4 +74,23 @@ class MusicService {
       throw Exception("No next music found");
     }
   }
+
+  //Get top trending music
+  Future<List<MusicData>> getTopTrendingMusics() async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Return the list of top trending music data (mockdata)
+    return MusicDataList.topTrending;
+  }
+
+  Future<List<MusicData>> getTopTrendingMusicsByRegion(String region) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Return the list of top trending music data by region (mockdata)
+    return MusicDataList.topTrending
+        .where((music) => music.nation.toLowerCase() == region)
+        .toList();
+  }
 }

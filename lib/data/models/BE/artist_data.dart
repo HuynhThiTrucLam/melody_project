@@ -45,7 +45,7 @@ class ArtistDataList {
           id: '1',
           name: 'Believer',
           subText: 'Imagine Dragons',
-          listener: '20000000',
+          listener: 20000000,
           avatarUrl:
               'https://i1.sndcdn.com/artworks-000570164507-8bew6z-t500x500.jpg',
           isVerified: true,
@@ -54,7 +54,7 @@ class ArtistDataList {
           id: '2',
           name: 'Radioactive',
           subText: 'Imagine Dragons',
-          listener: '18000000',
+          listener: 18000000,
           avatarUrl:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRohg4a3Qi8PCLAqt112qKhl1kocq0NzjtwPw&s',
           isVerified: true,
@@ -65,7 +65,7 @@ class ArtistDataList {
           id: '3',
           name: 'Evolve',
           subText: 'Album • Imagine Dragons',
-          listener: '5000000',
+          listener: 5000000,
           avatarUrl:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzSJhMBBueB_69bdpJ-q-PR9eS8ZRIJXmHzQ&s',
           isVerified: true,
@@ -90,7 +90,7 @@ class ArtistDataList {
           id: '4',
           name: 'Hãy Trao Cho Anh',
           subText: 'Sơn Tùng M-TP',
-          listener: '9000000',
+          listener: 9000000,
           avatarUrl:
               'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2019/7/1/741911/Hay-Trao-Cho-Anh.jpg',
           isVerified: true,
@@ -99,7 +99,7 @@ class ArtistDataList {
           id: '5',
           name: 'Chúng Ta Không Thuộc Về Nhau',
           subText: 'Sơn Tùng M-TP',
-          listener: '7000000',
+          listener: 7000000,
           avatarUrl:
               'https://avatar-ex-swe.nixcdn.com/mv/2016/08/04/c/e/1/9/1470277194346_640.jpg',
           isVerified: true,
@@ -110,7 +110,7 @@ class ArtistDataList {
           id: '6',
           name: 'Đừng Làm Trái Tim Anh Đau',
           subText: 'Album • Sơn Tùng M-TP',
-          listener: '3000000',
+          listener: 3000000,
           avatarUrl:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
           isVerified: true,
@@ -119,7 +119,7 @@ class ArtistDataList {
           id: '7',
           name: 'Đừng Làm Trái Tim Anh Đau',
           subText: 'Album • Sơn Tùng M-TP',
-          listener: '3000000',
+          listener: 3000000,
           avatarUrl:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
           isVerified: true,
@@ -128,7 +128,7 @@ class ArtistDataList {
           id: '8',
           name: 'Đừng Làm Trái Tim Anh Đau',
           subText: 'Album • Sơn Tùng M-TP',
-          listener: '3000000',
+          listener: 3000000,
           avatarUrl:
               'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZ_UkbdOdfppyfayhRU_0GOh4umJkXaAzYg&s',
           isVerified: true,
@@ -151,7 +151,7 @@ class ArtistDataList {
           id: '9',
           name: 'Blueming',
           subText: 'IU',
-          listener: '10000000',
+          listener: 10000000,
           avatarUrl:
               'https://i.scdn.co/image/ab67616d0000b2735e24525aeb46e0e5e933bb64',
           isVerified: true,
@@ -160,7 +160,7 @@ class ArtistDataList {
           id: '10',
           name: 'Celebrity',
           subText: 'IU',
-          listener: '9500000',
+          listener: 9500000,
           avatarUrl:
               'https://i.scdn.co/image/ab67616d0000b273f8c55b37b7fc84ef5b58e1c2',
           isVerified: true,
@@ -171,7 +171,7 @@ class ArtistDataList {
           id: '5',
           name: 'LILAC',
           subText: 'Album • IU',
-          listener: '4000000',
+          listener: 4000000,
           avatarUrl:
               'https://i.scdn.co/image/ab67616d0000b273ac403e18a4c5a9de3486aeb3',
           isVerified: true,

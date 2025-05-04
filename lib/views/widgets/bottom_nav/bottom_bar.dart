@@ -67,7 +67,6 @@ class _AnimatedNotchBottomNavState extends State<AnimatedNotchBottomNav> {
       showLabel: true,
       removeMargins: true,
       bottomBarHeight: 75.0,
-      // circleMargin: 16.0,
       notchColor: Colors.black,
       showTopRadius: true,
       bottomBarWidth:
@@ -76,7 +75,6 @@ class _AnimatedNotchBottomNavState extends State<AnimatedNotchBottomNav> {
       bottomBarItems: _buildBottomBarItems(),
       onTap: (index) {
         _controller.index = index;
-
         widget.onTap(index);
       },
       textAlign: TextAlign.center,
@@ -97,19 +95,24 @@ class _AnimatedNotchBottomNavState extends State<AnimatedNotchBottomNav> {
           child: SvgPicture.asset(
             icons[index],
             color: Colors.white,
-            width: 40,
-            height: 40,
+            width: index == 2 ? 50 : 40, // Larger size for the center item
+            height: index == 2 ? 50 : 40, // Larger size for the center item
           ),
         ),
         inActiveItem: Center(
           child: SvgPicture.asset(
             icons[index],
             color: Colors.white,
-            width: 30,
-            height: 30,
+            width:
+                index == 2
+                    ? 40
+                    : 30, // Smaller size for the inactive center item
+            height:
+                index == 2
+                    ? 40
+                    : 30, // Smaller size for the inactive center item
           ),
         ),
-
         itemLabel: labels[index],
       );
     });

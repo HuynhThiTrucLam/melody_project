@@ -59,7 +59,7 @@ class CustomSearchBar extends StatelessWidget {
 
   BoxDecoration get _decoration => BoxDecoration(
     color: backgroundColor ?? Colors.white,
-    borderRadius: borderRadius ?? BorderRadius.circular(8),
+    borderRadius: borderRadius ?? BorderRadius.circular(1),
     border: Border.all(color: LightColorTheme.grey, width: 0.5),
   );
 

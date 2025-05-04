@@ -4,7 +4,7 @@ import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
-import 'package:MELODY/views/screens/Home_screen/top_trending_screen.dart';
+import 'package:MELODY/views/screens/Top_trending/top_trending_screen.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
 import 'package:MELODY/views/widgets/artist_list/artist_carousel.dart';
 import 'package:MELODY/views/widgets/music_list/music_carousel.dart';

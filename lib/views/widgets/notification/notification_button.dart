@@ -29,8 +29,8 @@ class NotificationButton extends StatelessWidget {
           children: [
             SvgPicture.asset(
               ImageTheme.notification,
-              width: 20,
-              height: 20,
+              width: 24,
+              height: 24,
               colorFilter: ColorFilter.mode(
                 LightColorTheme.black,
                 BlendMode.srcIn,

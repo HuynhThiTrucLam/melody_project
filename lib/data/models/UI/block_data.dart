@@ -2,7 +2,7 @@ class BlockData {
   final String id;
   final String name;
   final String subText;
-  final String listener; // e.g., singer name
+  final int listener; // e.g., singer name
   final String avatarUrl; // cover image
   final bool isVerified;
 

@@ -1,16 +1,15 @@
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
-import 'package:MELODY/views/widgets/artist_list/artist_item.dart';
 import 'package:MELODY/views/widgets/component_block/component_block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MoreTab extends StatefulWidget {
   final String? id;
-  final String? name;
-  final String? imageUrl;
-  final String? subtext;
+  final String name;
+  final String imageUrl;
+  final dynamic subtext;
   const MoreTab({
     super.key,
     this.id,
@@ -44,11 +43,10 @@ class _MoreTabState extends State<MoreTab> {
           ),
           const SizedBox(height: 16),
           BlockItem(
-            no: 1,
-            id: widget.id ?? '',
+            id: widget.id,
             showNo: false,
-            imageUrl: widget.imageUrl ?? '',
-            title: widget.name ?? '',
+            imageUrl: widget.imageUrl,
+            title: widget.name,
             subtext: widget.subtext ?? '',
             shapeOfImage: 'square',
             showButton: false,

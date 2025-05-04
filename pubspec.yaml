@@ -47,7 +47,8 @@ dependencies:
   flutter_dotenv: ^5.1.0
   animated_notch_bottom_bar: ^1.0.3
   syncfusion_flutter_sliders: ^29.1.37
-
+  lottie: ^1.0.1
+  dio: ^5.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -74,6 +75,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/animations/
     - assets/icons/phone_locale/
     - assets/icons/illustrator/
     - lib/core/constants/
