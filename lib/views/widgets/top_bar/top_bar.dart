@@ -2,6 +2,7 @@
 
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Search_screen/search_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
 import 'package:MELODY/views/widgets/notification/notification_button.dart';
@@ -11,12 +12,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSearchBar;
+  final bool? isHeader; // New parameter
+  final String? headerTitle; // New: title text for header
   final VoidCallback onBack;
   final Function(String) onSearch;
   final VoidCallback onNotification;
 
-  final bool isTypingEnabled; // New: Whether to show text input
-  final TextEditingController? searchController; // New: Search controller
+  final bool isTypingEnabled;
+  final TextEditingController? searchController;
 
   const CustomTopBar({
     Key? key,
@@ -26,6 +29,8 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onNotification,
     this.isTypingEnabled = false,
     this.searchController,
+    this.isHeader, // New: default false
+    this.headerTitle, // New: optional
   }) : super(key: key);
 
   @override
@@ -44,13 +49,25 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Left
-            if (isSearchBar)
+            if (isSearchBar || isHeader == true)
               GoBackButton(onPressed: onBack)
             else
               SvgPicture.asset(ImageTheme.logo, width: 150),
 
             // Center
-            if (isSearchBar)
+            if (isHeader == true)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    headerTitle ?? '',
+                    style: LightTextTheme.headding1.copyWith(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              )
+            else if (isSearchBar)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -94,9 +111,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(50),
                                 borderSide: BorderSide(
-                                  color:
-                                      LightColorTheme
-                                          .mainColor, // or any color you want when focused
+                                  color: LightColorTheme.mainColor,
                                   width: 0.5,
                                 ),
                               ),

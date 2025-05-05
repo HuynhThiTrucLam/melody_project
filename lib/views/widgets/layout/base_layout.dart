@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 class BaseLayout extends StatelessWidget {
   final Widget child;
   final bool isSearchBar;
+  final bool? isHeader;
+  final String? headerTitle;
   final bool showTopBar;
   final bool showBottomNav;
   final VoidCallback? onNotification;
@@ -21,6 +23,8 @@ class BaseLayout extends StatelessWidget {
     this.isSearchBar = true,
     this.showTopBar = true,
     this.showBottomNav = true,
+    this.isHeader,
+    this.headerTitle,
     this.onNotification,
     this.searchController,
     this.isTypingEnabled = false,
@@ -37,6 +41,8 @@ class BaseLayout extends StatelessWidget {
           showTopBar
               ? CustomTopBar(
                 isSearchBar: isSearchBar,
+                isHeader: isHeader,
+                headerTitle: headerTitle,
                 isTypingEnabled: isTypingEnabled,
                 searchController: searchController,
                 onBack: onBack ?? () => Navigator.of(context).pop(),

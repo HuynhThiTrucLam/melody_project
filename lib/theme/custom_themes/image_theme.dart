@@ -36,4 +36,9 @@ class ImageTheme {
   static const String threeDocIcon = "assets/icons/three-doc.svg";
   static const String playBorderIcon = "assets/icons/play-border.svg";
   static const String filterIcon = "assets/icons/filter.svg";
+  static const String decorationMember = "assets/icons/decorate-membership.svg";
+  static const String cardIcon = "assets/icons/cardIcon.svg";
+  static const String cccdIcon = "assets/icons/cccd.svg";
+  static const String settingIcon = "assets/icons/setting.svg";
+  static const String contactIcon = "assets/icons/contact.svg";
 }

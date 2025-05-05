@@ -43,12 +43,16 @@ class _BaseScreenState extends State<BaseScreen> {
       children: [
         BaseLayout(
           child: const LibraryScreen(),
+          isHeader: true,
+          headerTitle: "Thư viện",
           isSearchBar: false,
           currentIndex: _currentIndex,
           onNavigationTap: _onNavigationTap,
         ),
         BaseLayout(
           child: const MemberShipScreen(),
+          isHeader: true,
+          headerTitle: "Thành viên",
           currentIndex: _currentIndex,
           onNavigationTap: _onNavigationTap,
         ),
@@ -60,11 +64,16 @@ class _BaseScreenState extends State<BaseScreen> {
         ),
         BaseLayout(
           child: const UploadScreen(),
+          isHeader: true,
+          headerTitle: "Tải nhạc lên",
           currentIndex: _currentIndex,
           onNavigationTap: _onNavigationTap,
         ),
         BaseLayout(
           child: const ProfileScreen(),
+          // showTopBar: false,
+          isHeader: true,
+          headerTitle: "Tài khoản",
           currentIndex: _currentIndex,
           onNavigationTap: _onNavigationTap,
           onNotification: () {
