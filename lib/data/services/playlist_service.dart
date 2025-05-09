@@ -87,6 +87,31 @@ class PlaylistService {
     }
   }
 
+  // Add track to playlist
+  Future<int> addTrackToPlaylist(String playlistId, String trackId) async {
+    try {
+      final token = await _authService.getToken();
+
+      final response = await http.post(
+        Uri.parse(
+          '$_backendUrl/api/v1/playlist/$playlistId/tracks?track_id=$trackId',
+        ),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        return 200;
+      } else if (response.statusCode == 400) {
+        return 400;
+      } else {
+        return 500;
+      }
+    } catch (e) {
+      debugPrint('Error adding track to playlist: $e');
+      return 500;
+    }
+  }
+
   Future<List<MusicDisplay>> getFavoriteSongs(String userId) async {
     try {
       // Get playlists first

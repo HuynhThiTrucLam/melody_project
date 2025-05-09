@@ -1012,6 +1012,7 @@ class _MusicPlayerState extends State<MusicPlayer>
                       name: song.name,
                       imageUrl: song.albumArt,
                       singer: song.artist,
+                      musicId: song.id,
                     ),
               );
             },

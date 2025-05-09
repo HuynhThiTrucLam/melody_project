@@ -1,14 +1,22 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
+import 'package:MELODY/data/models/BE/playlist_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:flutter/material.dart';
 
 enum ItemType { artist, song, playlist }
 
+// Default album background images for fallback
+const List<String> defaultAlbumBackgrounds = [
+  'https://i.pinimg.com/736x/41/27/50/412750a66a2acf2bf9bca02120f17186.jpg',
+  'https://i.pinimg.com/736x/a3/54/b3/a354b30dc6c3200d52c947aa785a5e49.jpg',
+  'https://i.pinimg.com/736x/62/85/a3/6285a33df275eed23bb0e1b4eb310f36.jpg',
+];
+
 class ArtistItem extends StatelessWidget {
   final String name;
   final String
   subText; // Followers for artist, singer name for song, album count for playlist
-  final String avatarUrl;
+  final String? avatarUrl;
   final bool isVerified;
   final ItemType itemType;
 
@@ -76,6 +84,9 @@ class ArtistItem extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
+    // Get default image URL if avatarUrl is null
+    final imageUrl = avatarUrl ?? defaultAlbumBackgrounds[0];
+
     if (itemType == ItemType.playlist) {
       // For playlist mode, use rectangular image
       return Container(
@@ -84,7 +95,7 @@ class ArtistItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           image: DecorationImage(
-            image: NetworkImage(avatarUrl),
+            image: NetworkImage(imageUrl),
             fit: BoxFit.cover,
           ),
         ),
@@ -99,7 +110,7 @@ class ArtistItem extends StatelessWidget {
             backgroundColor: Colors.green,
             child: CircleAvatar(
               radius: 30,
-              backgroundImage: NetworkImage(avatarUrl),
+              backgroundImage: NetworkImage(imageUrl),
             ),
           ),
           if (isVerified)
