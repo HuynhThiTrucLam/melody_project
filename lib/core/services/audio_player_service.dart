@@ -55,7 +55,7 @@ class AudioPlayerService {
   Future<Duration?> loadAudio(String filePath) async {
     try {
       await init();
-      await _audioPlayer.setFilePath(filePath);
+      await _audioPlayer.setUrl(filePath);
       return _audioPlayer.duration;
     } catch (e) {
       // return not found
