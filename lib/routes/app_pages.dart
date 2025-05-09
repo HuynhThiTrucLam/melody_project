@@ -1,6 +1,8 @@
 import 'package:MELODY/routes/app_routes.dart';
+import 'package:MELODY/views/screens/Album_detail_screen/album_detail.dart';
 import 'package:MELODY/views/screens/Artist_detail_screen/artist_profile.dart';
 import 'package:MELODY/views/screens/Base_screen/base_screen.dart';
+import 'package:MELODY/views/screens/Library_screen/library_screen.dart';
 import 'package:MELODY/views/screens/Music_player/music_player.dart';
 import 'package:MELODY/views/screens/Top_trending/top_trending_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
@@ -35,12 +37,18 @@ class AppPages {
         return MaterialPageRoute(
           builder: (_) => MusicPlayer(musicId: arguments['songId']),
         );
+      case AppRoutes.albumDetail:
+        final arguments = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => AlbumDetail(albumId: arguments['albumId']),
+        );
       case AppRoutes.artistDetail:
         final arguments = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ArtistProfile(artistId: arguments['artistId']),
         );
-
+      case AppRoutes.playlist:
+        return MaterialPageRoute(builder: (_) => LibraryScreen());
       case AppRoutes.search_screen:
         return MaterialPageRoute(
           builder: (_) => SearchScreen(initialQuery: "Hot trending"),

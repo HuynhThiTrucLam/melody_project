@@ -1,4 +1,4 @@
-import 'package:MELODY/data/models/BE/music_data.dart';
+import 'package:MELODY/data/models/UI/music_display.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/views/screens/Top_trending/custom_block.dart';
 import 'package:MELODY/views/widgets/music_list/music_item.dart';

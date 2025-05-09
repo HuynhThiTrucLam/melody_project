@@ -58,6 +58,7 @@ class AudioPlayerService {
       await _audioPlayer.setFilePath(filePath);
       return _audioPlayer.duration;
     } catch (e) {
+      // return not found
       debugPrint('Error loading audio: $e');
       return null;
     }

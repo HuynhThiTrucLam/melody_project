@@ -1,5 +1,4 @@
 import 'package:MELODY/auth/auth_service.dart';
-import 'package:MELODY/core/services/user_service.dart';
 import 'package:MELODY/data/models/BE/user_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
@@ -11,8 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final UserData? userData;
-  const ProfileScreen({super.key, this.userData});
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -20,7 +18,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
-  final UserService _userService = UserService();
   UserData? _userData;
   bool _isLoading = true;
 
@@ -31,28 +28,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchUserData() async {
-    if (widget.userData != null) {
-      setState(() {
-        _userData = widget.userData;
-        _isLoading = false;
-      });
-      return;
-    }
-
     try {
-      final userData = await _userService.getUserDataFromToken();
-      debugPrint('User data: $userData');
-      debugPrint('User ID: ${userData?.id}');
-      debugPrint('User Name: ${userData?.name}');
-      debugPrint('User Email: ${userData?.email}');
-      debugPrint('User Phone: ${userData?.phone}');
-      debugPrint('User Membership: ${userData?.membership}');
-      debugPrint('User Address: ${userData?.address}');
-      debugPrint('User Profile Picture: ${userData?.profilePictureUrl}');
-      setState(() {
-        _userData = userData;
-        _isLoading = false;
-      });
+      // Use AuthService's getUserInfo() directly
+      final userData = await _authService.getUserInfo();
+
+      if (userData != null) {
+        debugPrint('User data: $userData');
+        debugPrint('User Name: ${userData.name}');
+        debugPrint('User Email: ${userData.email}');
+        debugPrint('User Membership: ${userData.membership}');
+        debugPrint('User Address: ${userData.address}');
+        debugPrint('User Profile Picture: ${userData.profilePictureUrl}');
+
+        setState(() {
+          _userData = userData;
+          _isLoading = false;
+        });
+      } else {
+        debugPrint('No user data found');
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Error fetching user data: $e');
       setState(() {
@@ -63,7 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void handleSignOut() async {
     await _authService.signOut();
-    _userService.clearCachedUserData();
     print('User signed out');
     Navigator.pushReplacement(
       context,
@@ -129,56 +125,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             const SizedBox(height: 16),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Row(
-            //       crossAxisAlignment: CrossAxisAlignment.center,
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         Icon(
-            //           Icons.headphones,
-            //           color: LightColorTheme.grey,
-            //           size: 16,
-            //         ),
-            //         const SizedBox(width: 4),
-            //         Text(
-            //           'Artist',
-            //           style: LightTextTheme.paragraph2.copyWith(
-            //             fontSize: 16,
-            //             color: LightColorTheme.grey,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-
-            //     //Toggle Button
-            //     Switch(
-            //       value: true,
-            //       activeColor: Colors.black, // Active color of the thumb
-            //       inactiveThumbColor: Colors.white, // Inactive thumb color
-            //       inactiveTrackColor:
-            //           Colors.grey.shade300, // Inactive track color
-            //       activeTrackColor: Colors.green, // Active track color
-            //       onChanged: (bool value) {
-            //         setState(() {
-            //           false;
-            //         });
-            //       },
-            //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            //       // trackBorderColor: MaterialStateProperty.all(
-            //       //   Colors.grey.shade300,
-            //       // ), // Track border color
-            //     ),
-            //   ],
-            // ),
             Divider(
               color: LightColorTheme.grey.withOpacity(0.5),
               thickness: 0.25,
               height: 20,
             ),
-
-            // const SizedBox(height: 16),
 
             // personal Infor
             GestureDetector(
@@ -240,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             //Contact Icon
             GestureDetector(
               onTap: () {
-                print('Cài đặt');
+                print('Hỗ trợ');
               },
               child: Padding(
                 padding: const EdgeInsets.only(top: 14, bottom: 14),
