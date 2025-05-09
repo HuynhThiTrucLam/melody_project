@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+
 import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/fiter_tab.dart';
 import 'package:MELODY/data/services/music_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/views/screens/Top_trending/trending_list.dart';
 import 'package:MELODY/views/widgets/layout/base_layout.dart';
-import 'package:flutter/material.dart';
 
 class TopTrendingScreen extends StatefulWidget {
   const TopTrendingScreen({super.key});
@@ -16,17 +17,17 @@ class TopTrendingScreen extends StatefulWidget {
 class _TopTrendingScreenState extends State<TopTrendingScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Future<List<MusicData>> topTrendingFuture;
+  late Future<List<MusicDisplay>> topTrendingFuture;
   final MusicService _musicService = MusicService();
 
   late Filter _currentFilter;
 
-  // Define the list of filter options
+  // Define the list of filter options with consistent codes
   final List<Filter> _filters = [
-    Filter(code: "all", name: "Tất cả"),
-    Filter(code: "vietnam", name: "Việt Nam"),
-    Filter(code: "usuk", name: "US/UK"),
-    Filter(code: "kpop", name: "K-Pop"),
+    Filter(code: "GLOBAL", name: "Tất cả"),
+    Filter(code: "VN", name: "Việt Nam"),
+    Filter(code: "US", name: "US/UK"),
+    Filter(code: "KR", name: "K-Pop"),
   ];
 
   @override
@@ -41,7 +42,17 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
     _tabController.addListener(_handleTabChange);
 
     // Initial data load based on the filter
-    topTrendingFuture = _musicService.getTopTrendingMusics();
+    // _loadTrendingMusic(_currentFilter.code);
+    topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
+      _currentFilter.code,
+    );
+  }
+
+  // Helper method to load trending music
+  void _loadTrendingMusic(String region) {
+    setState(() {
+      topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(region);
+    });
   }
 
   void _handleTabChange() {
@@ -53,31 +64,7 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
     // Update the current filter based on selected tab
     setState(() {
       _currentFilter = _filters[_tabController.index];
-
-      print(_currentFilter.code);
-      // Update the future based on selected filter
-      switch (_currentFilter.code) {
-        case "all":
-          topTrendingFuture = _musicService.getTopTrendingMusics();
-          break;
-        case "vietnam":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "vietnam",
-          );
-          break;
-        case "usuk":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "usuk",
-          );
-          break;
-        case "kpop":
-          topTrendingFuture = _musicService.getTopTrendingMusicsByRegion(
-            "kpop",
-          );
-          break;
-        default:
-          topTrendingFuture = _musicService.getTopTrendingMusics();
-      }
+      _loadTrendingMusic(_currentFilter.code);
     });
   }
 
@@ -96,7 +83,7 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           // Tab bar
           Row(
@@ -111,19 +98,15 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
                 tabAlignment: TabAlignment.start,
                 tabs: _filters.map((filter) => Tab(text: filter.name)).toList(),
                 dividerHeight: 0,
-                labelPadding: EdgeInsets.only(left: 0, right: 16),
+                labelPadding: const EdgeInsets.only(left: 0, right: 16),
               ),
             ],
           ),
 
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Music List
-          Expanded(
-            child: TrendingList(
-              topTrendingFuture: topTrendingFuture,
-            ), // Pass the Future here
-          ),
+          Expanded(child: TrendingList(topTrendingFuture: topTrendingFuture)),
         ],
       ),
     );

@@ -1,7 +1,9 @@
+import 'package:MELODY/auth/auth_service.dart';
 import 'package:MELODY/data/models/BE/album_data.dart';
 import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
+import 'package:MELODY/data/services/music_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/views/screens/Albums_screen.dart/albums_screen.dart';
@@ -16,9 +18,57 @@ import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<TagData> tags = TagDataList.tags;
-  HomeScreen({super.key});
+  final AuthService _authService = AuthService();
+  final MusicService _musicService = MusicService();
+
+  List<MusicDisplay> _recommendedSongs = [];
+  // List<MusicData> _trendingSongs = [];
+  // List<ArtistData> _trendingArtists = [];
+  // List<MusicData> _featuredAlbums = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHomeData();
+  }
+
+  Future<void> _loadHomeData() async {
+    try {
+      final token = await _authService.getToken();
+      print('Token: $token');
+      // Load data in parallel to improve performance
+      final results = await Future.wait([
+        _musicService.getTopTrendingMusicsByRegion("GLOBAL"),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          // Properly assign results and limit to 10 items
+          _recommendedSongs = results[0].take(10).toList();
+          debugPrint("Recommended songs count: ${_recommendedSongs.length}");
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading home data: $e');
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   void onSearch(BuildContext context, String tag) {
     Navigator.push(
@@ -192,30 +242,37 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // Songs
-            MusicCarousel(
-              items: MusicDataList.musics,
-              type: MediaType.song,
-              title: "Đề xuất cho bạn",
-            ),
+            // Display loading indicator if data is loading
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                  children: [
+                    // Top Songs
+                    MusicCarousel(
+                      items: _recommendedSongs,
+                      type: MediaType.song,
+                      title: "Đề xuất cho bạn",
+                    ),
 
-            const SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-            // Artists
-            ArtistCarousel(
-              artists: ArtistDataList.mockArtists,
-              title: "Nghệ sĩ nổi bật",
-            ),
+                    // Artists
+                    ArtistCarousel(
+                      artists: ArtistDataList.mockArtists,
+                      title: "Nghệ sĩ nổi bật",
+                    ),
 
-            const SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-            // Albums
-            MusicCarousel(
-              items: AlbumDataList.albums,
-              type: MediaType.album,
-              title: "Album nổi bật",
-            ),
-            const SizedBox(height: 100),
+                    // Albums
+                    MusicCarousel(
+                      items: AlbumDataList.albums,
+                      type: MediaType.album,
+                      title: "Album nổi bật",
+                    ),
+                    const SizedBox(height: 100),
+                  ],
+                ),
           ],
         ),
       ),

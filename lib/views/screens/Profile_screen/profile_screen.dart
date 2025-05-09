@@ -1,7 +1,9 @@
+import 'package:MELODY/auth/auth_service.dart';
 import 'package:MELODY/data/models/BE/user_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
+import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,26 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    // call getUserInfo in _authService to get user info
+    final user = _authService.getUserInfo();
+    debugPrint('User info: $user');
+  }
+
+  void handleSignOut() async {
+    await _authService.signOut();
+    // Navigate to the login screen or perform any other action
+    print('User signed out');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       radius: 30,
                       backgroundImage: AssetImage(
                         widget.userData?.profilePictureUrl ??
-                            'assets/images/default_avatar.png',
+                            'assets/images/Avatar.png',
                       ),
                     ),
 
@@ -217,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CustomButton(
               hintText: 'Đăng xuất',
               onPressed: () {
-                print('Đăng xuất');
+                handleSignOut();
               },
             ),
           ],

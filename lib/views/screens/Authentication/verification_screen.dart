@@ -157,32 +157,32 @@ class _VerificationScreenState extends State<VerificationScreen>
   }
 
   Widget _buildHeader() {
-    void handleGoBack(BuildContext context) {
-      var nextScreen =
-          widget.otpType == OtpType.signIn
-              ? const PhoneSignInScreen()
-              : widget.otpType == OtpType.signUp
-              ? const SignUpScreen()
-              : const ForgotPasswordScreen();
-      Navigation.navigateTo(context, nextScreen, true);
-    }
+    // void handleGoBack(BuildContext context) {
+    //   var nextScreen =
+    //       widget.otpType == OtpType.signIn
+    //           ? const PhoneSignInScreen()
+    //           : widget.otpType == OtpType.signUp
+    //           ? const SignUpScreen()
+    //           : const ForgotPasswordScreen();
+    //   Navigation.navigateTo(context, nextScreen, true);
+    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
           children: [
-            InkWell(
-              onTap: () => handleGoBack(context),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Icon(Icons.arrow_back, size: 20),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () => handleGoBack(context),
+            //   child: Container(
+            //     padding: const EdgeInsets.all(8),
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       border: Border.all(color: Colors.grey.shade300),
+            //     ),
+            //     child: const Icon(Icons.arrow_back, size: 20),
+            //   ),
+            // ),
           ],
         ),
         const SizedBox(height: 80),

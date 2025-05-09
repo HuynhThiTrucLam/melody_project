@@ -42,8 +42,4 @@ class GoogleAuthService {
     await _googleSignIn.signOut();
     await _storage.delete(key: 'jwt_token');
   }
-
-  Future<String?> getToken() async {
-    return await _storage.read(key: 'jwt_token');
-  }
 }

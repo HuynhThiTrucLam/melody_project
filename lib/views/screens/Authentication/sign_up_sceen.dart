@@ -1,22 +1,21 @@
-import 'package:MELODY/auth/google_auth_service.dart';
 import 'package:MELODY/auth/auth_service.dart';
+import 'package:MELODY/auth/google_auth_service.dart';
 import 'package:MELODY/core/models/country_code.dart';
 import 'package:MELODY/core/models/otp_type.dart';
 import 'package:MELODY/core/services/country_code_service.dart';
 import 'package:MELODY/core/utils/navigation.dart';
+import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/theme/custom_themes/text_theme.dart';
+import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
 import 'package:MELODY/views/screens/Authentication/success_screen.dart';
 import 'package:MELODY/views/screens/Authentication/verification_screen.dart';
-import 'package:MELODY/views/screens/Introduction_screen/direction_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
-import 'package:MELODY/views/widgets/custom_input/custom_phone_input.dart';
-import 'package:flutter/material.dart';
-import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
+import 'package:MELODY/views/widgets/custom_input/custom_phone_input.dart';
 import 'package:MELODY/views/widgets/custom_input/default_input.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
 
 /// A screen that allows users to sign in to the MELODY app.
 ///
@@ -33,12 +32,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final GoogleAuthService _googleAuthService = GoogleAuthService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  // final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   List<CountryCode> _countryCodes = [];
   CountryCode? _selectedCountry;
-  String? _phoneError;
+  String? _emailError;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   String? _usernameError;
@@ -58,7 +58,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
-    _phoneController.dispose();
+    // _phoneController.dispose();
+    _emailController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
@@ -109,9 +110,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _buildHeader(),
                     const SizedBox(height: 40),
                     _buildSignUpForm(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 32),
                     _buildCheckboxAcceptTerms(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     _buildSignUpButton(),
                     const SizedBox(height: 16),
                     _buildAlternativeSignUpOptions(context),
@@ -129,48 +130,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildHeader() {
-    void handleGoBack(BuildContext context) {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) =>
-                  const DirectionScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(-1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOut;
-            var tween = Tween(
-              begin: begin,
-              end: end,
-            ).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(position: offsetAnimation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 300),
-        ),
-      );
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            InkWell(
-              onTap: () => handleGoBack(context),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Icon(Icons.arrow_back, size: 20),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 56),
         Center(
           child: Column(
             children: [
@@ -215,23 +178,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         const SizedBox(height: 16),
-        CustomPhoneInput(
-          phoneController: _phoneController,
-          countryCodes: _countryCodes,
-          selectedCountry: _selectedCountry!,
-          onCountryChanged: (CountryCode country) {
-            setState(() {
-              _selectedCountry = country;
-            });
-          },
-          phoneError: _phoneError,
-          hasBorder: false,
+        // CustomPhoneInput(
+        //   phoneController: _phoneController,
+        //   countryCodes: _countryCodes,
+        //   selectedCountry: _selectedCountry!,
+        //   onCountryChanged: (CountryCode country) {
+        //     setState(() {
+        //       _selectedCountry = country;
+        //     });
+        //   },
+        //   phoneError: _phoneError,
+        //   hasBorder: false,
+        //   onChanged: (value) {
+        //     setState(() {
+        //       _phoneError = null;
+        //     });
+        //   },
+        // ),
+        CustomInputField(
+          controller: _emailController,
+          hintText: 'Địa chỉ email',
           onChanged: (value) {
             setState(() {
-              _phoneError = null;
+              _emailError = null;
             });
           },
+          shadowPosition: ShadowPositionType.left,
         ),
+        // Add this code to display email error
+        if (_emailError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+            child: Text(
+              _emailError!,
+              style: TextStyle(
+                color: Colors.red.shade300,
+                fontWeight: FontWeight.w500,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
         const SizedBox(height: 16),
         CustomInputField(
           controller: _passwordController,
@@ -319,7 +305,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _passwordError = null;
       _confirmPasswordError = null;
       _acceptTermsError = null;
-      _phoneError = null;
+      _emailError = null;
       _isLoading = true;
     });
 
@@ -333,9 +319,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       hasError = true;
     }
 
-    if (_phoneController.text.isEmpty) {
+    if (_emailController.text.isEmpty) {
       setState(() {
-        _phoneError = 'Vui lòng nhập số điện thoại';
+        _emailError = 'Vui lòng nhập địa chỉ email';
       });
       hasError = true;
     }
@@ -381,7 +367,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final authen = await AuthService().signUp(
         _usernameController.text,
         _passwordController.text,
-        _phoneController.text,
+        _emailController.text,
       );
 
       if (authen == null) {
@@ -399,7 +385,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Navigation.navigateTo(
         context,
         VerificationScreen(
-          phoneNumber: _phoneController.text,
+          phoneNumber: _emailController.text,
           countryCode: _selectedCountry!.dialCode,
           otpType: OtpType.signUp,
         ),
@@ -445,7 +431,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Text(
               'Đồng ý với các',
               style: LightTextTheme.paragraph3.copyWith(

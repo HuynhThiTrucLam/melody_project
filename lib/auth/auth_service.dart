@@ -60,4 +60,33 @@ class AuthService {
       throw Exception('Error signing up');
     }
   }
+
+  Future<void> signOut() async {
+    try {
+      await _storage.delete(key: 'jwt_token');
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+    }
+  }
+
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'jwt_token');
+  }
+
+  // Get user infor from decode the token
+  Future<Map<String, dynamic>?> getUserInfo() async {
+    try {
+      final token = await getToken();
+      if (token == null) return null;
+
+      final payload = token.split('.')[1];
+      final normalizedPayload = base64Url.normalize(payload);
+      final decodedBytes = base64Url.decode(normalizedPayload);
+      final decodedString = utf8.decode(decodedBytes);
+      return jsonDecode(decodedString);
+    } catch (e) {
+      debugPrint('Error getting user info: $e');
+      return null;
+    }
+  }
 }

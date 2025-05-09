@@ -2,6 +2,7 @@ class ImageTheme {
   ImageTheme._();
 
   static const String logo = "assets/icons/logo.svg";
+  static const String logoCircle = "assets/icons/Logo-circle.svg";
   static const String visibilityEye = "assets/icons/visibility_eye.svg";
   static const String visibilityOffEye = "assets/icons/visibility_off_eye.svg";
   static const String phoneAuth = "assets/icons/phone_auth.svg";

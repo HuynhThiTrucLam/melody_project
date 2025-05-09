@@ -50,7 +50,7 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             // Left
             if (isSearchBar || isHeader == true)
-              GoBackButton(onPressed: onBack)
+              IconButton(icon: Icon(Icons.arrow_back), onPressed: onBack)
             else
               SvgPicture.asset(ImageTheme.logo, width: 150),
 

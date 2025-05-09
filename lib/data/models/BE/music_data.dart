@@ -1,3 +1,65 @@
+class MusicDisplay {
+  final String id;
+  final String title;
+  final String artists;
+  final String imageUrl;
+  final String rank;
+  final int listener;
+  // Add other fields as needed
+
+  MusicDisplay({
+    required this.id,
+    required this.title,
+    required this.artists,
+    required this.imageUrl,
+    required this.rank,
+    required this.listener,
+  });
+
+  factory MusicDisplay.fromJson(Map<String, dynamic> json) {
+    // Handle different API response formats
+    if (json.containsKey('trackMetadata')) {
+      // Spotify API format
+      final trackMetadata = json['trackMetadata'];
+      final chartEntryData = json['chartEntryData'];
+
+      // Handle artists list
+      List<String> artistNames = [];
+      for (var artist in trackMetadata['artists']) {
+        artistNames.add(artist['name']);
+      }
+      String artists = artistNames.join('x ');
+
+      return MusicDisplay(
+        id: trackMetadata['trackUri'].split(':').last,
+        title: trackMetadata['trackName'],
+        artists: artists,
+        imageUrl: trackMetadata['displayImageUri'],
+        rank: chartEntryData['currentRank'].toString(),
+        listener: 3000000000,
+      );
+    } else {
+      // Direct API format (without nested trackMetadata)
+      // Handle artist that could be a string or an array
+      String artistText;
+      if (json['artist'] is List) {
+        artistText = (json['artist'] as List).join(', ');
+      } else {
+        artistText = json['artist']?.toString() ?? '';
+      }
+
+      return MusicDisplay(
+        id: json['id'] ?? '',
+        title: json['name'] ?? '',
+        artists: artistText,
+        imageUrl: json['albumArt'] ?? '',
+        rank: json['rank']?.toString() ?? '0',
+        listener: json['listener'] ?? 0,
+      );
+    }
+  }
+}
+
 class MusicData {
   final String id;
   final String name;
@@ -26,6 +88,59 @@ class MusicData {
     required this.releaseDate,
     required this.nation,
   });
+
+  factory MusicData.fromJson(Map<String, dynamic> json) {
+    // Handle artist field that can be a string or an array
+    String artistText;
+    if (json['artist'] is List) {
+      artistText = (json['artist'] as List).join(', ');
+    } else {
+      artistText = json['artist']?.toString() ?? '';
+    }
+
+    // Extract lyrics text from complex lyrics object, if present
+    String lyricsText = '';
+    if (json['lyrics'] != null) {
+      if (json['lyrics'] is String) {
+        lyricsText = json['lyrics'];
+      } else if (json['lyrics'] is Map) {
+        // Handle nested lyrics structure
+        try {
+          final lyricsObj = json['lyrics']['lyrics'];
+          if (lyricsObj != null && lyricsObj['lines'] is List) {
+            lyricsText = (lyricsObj['lines'] as List)
+                .map((line) => line['words'])
+                .where(
+                  (text) =>
+                      text != null && text.toString().isNotEmpty && text != '♪',
+                )
+                .join('\n');
+          }
+        } catch (e) {
+          // Fallback if lyrics extraction fails
+          lyricsText = 'Lyrics not available';
+        }
+      }
+    }
+
+    return MusicData(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      artist: artistText,
+      albumArt: json['albumArt'] ?? '',
+      audioUrl: json['audioUrl'] ?? '',
+      lyrics: lyricsText,
+      duration: Duration(milliseconds: json['duration'] ?? 0),
+      listener: json['listener'] ?? 0,
+      isFavorite: json['isFavorite'] ?? false,
+      genre: json['genre'] ?? 'Unknown',
+      releaseDate:
+          json['releaseDate'] != null
+              ? DateTime.tryParse(json['releaseDate']) ?? DateTime.now()
+              : DateTime.now(),
+      nation: json['nation'] ?? 'unknown',
+    );
+  }
 }
 
 class MusicDataList {
@@ -37,8 +152,8 @@ class MusicDataList {
       albumArt:
           'https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png',
       audioUrl: 'https://example.com/audio/blinding_lights.mp3',
-      lyrics: 'I said, ooh, I’m blinded by the lights...',
-      duration: Duration(minutes: 3, seconds: 20),
+      lyrics: "I said, ooh, I'm blinded by the lights...",
+      duration: const Duration(minutes: 3, seconds: 20),
       listener: 1580000,
       isFavorite: true,
       genre: 'Synthwave',
@@ -114,19 +229,15 @@ Dành cho em dành hết ân tình anh mang một đời
 Có biết bao nhiêu điều còn đang vấn vương
 Dành cho em dành hết ân tình anh mang một đời
 Đừng làm trái tim anh đau
-… Vậy thì anh xin chết vì người anh thương
-Có biết bao nhiêu điều còn đang vấn vương
-Dành cho em dành hết ân tình anh mang một đời
-Đừng làm trái tim anh đau
 … Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-là-lá-là-la (hey hey hey hu-huh hey hey)
-Là-lá-là-la-la-lá-la (hey hey)
+Là-lá-là-la-la-lá-là (hey hey)
 Là-lá-là-la (hey hey okay)
 Là-lá-là-la-lá-la-la-là (hey hey hu-huh đừng làm trái tim anh đau)
 … One more time one more time one more time
 Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-là-lá-là-la (hey hey hey hu-huh hey hey)
-Là-lá-là-la-la-lá-la (hey hey Sơn Tùng M-TP)
+Là-lá-là-la-la-lá-là (hey hey Sơn Tùng M-TP)
 Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-la-là (Sơn Tùng hey hey hu-huh đừng làm trái tim anh đau)''',
       duration: Duration(minutes: 4, seconds: 10),
@@ -260,8 +371,8 @@ Là-lá-là-la-lá-la-la-là (Sơn Tùng hey hey hu-huh đừng làm trái tim a
       albumArt:
           'https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png',
       audioUrl: 'https://example.com/audio/blinding_lights.mp3',
-      lyrics: 'I said, ooh, I’m blinded by the lights...',
-      duration: Duration(minutes: 3, seconds: 20),
+      lyrics: "I said, ooh, I'm blinded by the lights...",
+      duration: const Duration(minutes: 3, seconds: 20),
       listener: 1580000,
       isFavorite: true,
       genre: 'Synthwave',
@@ -337,19 +448,15 @@ Dành cho em dành hết ân tình anh mang một đời
 Có biết bao nhiêu điều còn đang vấn vương
 Dành cho em dành hết ân tình anh mang một đời
 Đừng làm trái tim anh đau
-… Vậy thì anh xin chết vì người anh thương
-Có biết bao nhiêu điều còn đang vấn vương
-Dành cho em dành hết ân tình anh mang một đời
-Đừng làm trái tim anh đau
 … Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-là-lá-là-la (hey hey hey hu-huh hey hey)
-Là-lá-là-la-la-lá-la (hey hey)
+Là-lá-là-la-la-lá-là (hey hey)
 Là-lá-là-la (hey hey okay)
 Là-lá-là-la-lá-la-la-là (hey hey hu-huh đừng làm trái tim anh đau)
 … One more time one more time one more time
 Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-là-lá-là-la (hey hey hey hu-huh hey hey)
-Là-lá-là-la-la-lá-la (hey hey Sơn Tùng M-TP)
+Là-lá-là-la-la-lá-là (hey hey Sơn Tùng M-TP)
 Là-lá-là-la (hey hey)
 Là-lá-là-la-lá-la-la-là (Sơn Tùng hey hey hu-huh đừng làm trái tim anh đau)''',
       duration: Duration(minutes: 4, seconds: 10),

@@ -1,4 +1,5 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
+import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/views/screens/Album_detail_screen/album_detail.dart';
 import 'package:MELODY/views/screens/Music_player/music_player.dart';
@@ -57,10 +58,18 @@ class MusicListItem extends StatelessWidget {
 
     // Logic for different types
     if (type == MediaType.song) {
-      imageUrl = item.albumArt;
-      title = item.name;
-      subtitle = item.artist;
-      countValue = item.listener;
+      // Handle both MusicData and MusicDisplay classes
+      if (item is MusicDisplay) {
+        imageUrl = item.imageUrl;
+        title = item.title;
+        subtitle = item.artists;
+        countValue = item.listener;
+      } else {
+        imageUrl = item.albumArt;
+        title = item.name;
+        subtitle = item.artist;
+        countValue = item.listener;
+      }
       countLabel = 'lượt nghe';
     } else if (type == MediaType.album) {
       imageUrl = item.coverImage;

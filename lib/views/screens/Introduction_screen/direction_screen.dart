@@ -1,9 +1,11 @@
+import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/views/screens/Authentication/sign_in_screen.dart';
 import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class DirectionScreen extends StatelessWidget {
   const DirectionScreen({super.key});
@@ -37,19 +39,8 @@ class DirectionScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 22),
                 child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: LightColorTheme.mainColor,
-                      ),
-                      child: Icon(
-                        Icons.music_note,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 42),
+                    SvgPicture.asset(ImageTheme.logoCircle, width: 80),
+                    const SizedBox(height: 32),
 
                     // Tiêu đề chính
                     Text(
@@ -57,7 +48,7 @@ class DirectionScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: LightTextTheme.bold.copyWith(fontSize: 30),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
 
                     // Đoạn mô tả
                     Text(
