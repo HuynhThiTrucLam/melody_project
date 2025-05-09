@@ -42,4 +42,5 @@ class ImageTheme {
   static const String cccdIcon = "assets/icons/cccd.svg";
   static const String settingIcon = "assets/icons/setting.svg";
   static const String contactIcon = "assets/icons/contact.svg";
+  static const String dancingIcon = "assets/icons/dancing-animate.svg";
 }

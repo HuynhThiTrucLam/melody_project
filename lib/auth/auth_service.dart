@@ -1,5 +1,6 @@
 import 'package:MELODY/config/env_config.dart';
 import 'package:MELODY/core/models/authen.dart';
+import 'package:MELODY/data/models/BE/user_data.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -74,7 +75,7 @@ class AuthService {
   }
 
   // Get user infor from decode the token
-  Future<Map<String, dynamic>?> getUserInfo() async {
+  Future<Map<String, dynamic>?> getUserTokenInfo() async {
     try {
       final token = await getToken();
       if (token == null) return null;
@@ -86,6 +87,29 @@ class AuthService {
       return jsonDecode(decodedString);
     } catch (e) {
       debugPrint('Error getting user info: $e');
+      return null;
+    }
+  }
+
+  // call api get user info
+  Future<UserData?> getUserInfo() async {
+    final tokenInfo = await getUserTokenInfo();
+    final userId = tokenInfo?['user_id'];
+    debugPrint('User ID: $userId');
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse('$_backendUrl/api/v1/users/$userId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      debugPrint('User data: $data');
+      final userData = UserData.fromJson(data);
+      debugPrint('User data: $userData');
+      return userData;
+    } else {
       return null;
     }
   }

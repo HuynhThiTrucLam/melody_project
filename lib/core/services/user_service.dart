@@ -14,17 +14,18 @@ class UserService {
     }
 
     try {
-      final tokenInfo = await _authService.getUserInfo();
-      if (tokenInfo == null) return null;
+      final tokenInfo = await _authService.getUserTokenInfo();
+      if (tokenInfo == null) {
+        debugPrint('No token info available');
+        return _createDefaultUserData(); // Return default data instead of null
+      }
 
       debugPrint('Token info: $tokenInfo');
 
       // Map token claims to UserData model
       final userData = UserData(
-        id: tokenInfo['sub'] ?? tokenInfo['id'] ?? '',
         name: tokenInfo['name'] ?? tokenInfo['username'] ?? 'User',
         email: tokenInfo['email'] ?? '',
-        phone: tokenInfo['phone'] ?? '',
         membership: tokenInfo['membership'] ?? 'Free',
         address: tokenInfo['address'] ?? '',
         profilePictureUrl:
@@ -36,8 +37,20 @@ class UserService {
       return userData;
     } catch (e) {
       debugPrint('Error getting user data from token: $e');
-      return null;
+      // Return a default user rather than null to prevent app crashes
+      return _createDefaultUserData();
     }
+  }
+
+  // Create default user data when token parsing fails
+  UserData _createDefaultUserData() {
+    return UserData(
+      name: 'Guest User',
+      email: '',
+      membership: 'Free',
+      address: '',
+      profilePictureUrl: 'assets/images/Avatar.png',
+    );
   }
 
   // Clear cached user data (call when logging out)

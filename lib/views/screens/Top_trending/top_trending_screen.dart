@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:MELODY/data/models/BE/music_data.dart';
+import 'package:MELODY/data/models/UI/music_display.dart';
 import 'package:MELODY/data/models/UI/fiter_tab.dart';
 import 'package:MELODY/data/services/music_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';

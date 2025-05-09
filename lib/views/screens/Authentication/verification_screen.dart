@@ -524,8 +524,14 @@ class _VerificationScreenState extends State<VerificationScreen>
               duration: Duration(seconds: 1),
             ),
           );
+
+          // Navigate to the success screen after successful sign in verification
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (!mounted) return;
+
+          Navigation.navigateTo(context, const SuccessScreen(), true);
         } else if (widget.otpType == OtpType.resetPassword) {
-          // Navigate to the success screen after successful verification
+          // Navigate to the reset password screen after successful verification
           await Future.delayed(const Duration(milliseconds: 200));
           if (!mounted) return;
 
@@ -535,19 +541,22 @@ class _VerificationScreenState extends State<VerificationScreen>
             false,
           );
         } else if (widget.otpType == OtpType.signUp) {
-          // Navigate to the success screen after successful verification
+          // Navigate to the user direction screen after successful verification for signup
           await Future.delayed(const Duration(milliseconds: 200));
           if (!mounted) return;
 
-          Navigation.navigateTo(context, const UserDirectionScreen(), false);
+          Navigation.navigateTo(
+            context,
+            const SuccessScreen(
+              title: "Chào mừng bạn!",
+              description: "Hãy cùng khám phá thế giới âm nhạc với chúng tôi!",
+              buttonText: "Bắt đầu ngay",
+              isSignUp: true,
+            ),
+            true,
+          );
         }
       }
-
-      // Navigate to the success screen after successful verification
-      await Future.delayed(const Duration(milliseconds: 1200));
-      if (!mounted) return;
-
-      Navigation.navigateTo(context, const SuccessScreen(), true);
     } catch (e) {
       // Handle any errors
       // Shake animation for error

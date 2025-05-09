@@ -7,11 +7,15 @@ class AppRoutes {
   static const String phoneSignIn = '/phone-sign-in';
   static const String verificationCode = '/verification-code';
   static const String signUp = '/sign-up';
+
   static const String home = '/home';
   static const String topTrending = '/top-trending';
   static const String search_screen = '/search_screen';
+  static const String playlist = '/playlist';
+
   static const String notification = '/notification';
 
   static const String songDetail = '/song-detail';
   static const String artistDetail = '/artist-detail';
+  static const String albumDetail = '/album-detail';
 }

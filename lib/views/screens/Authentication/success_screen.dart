@@ -41,6 +41,7 @@ class _SuccessScreenState extends State<SuccessScreen>
   Timer? _navigationTimer;
   // Animation for fade-out transition
   late Animation<double> _fadeAnimation;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -60,26 +61,33 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   // Method to perform smooth transition to destination screen
   void _navigateToMainApp() async {
+    // Prevent multiple navigation attempts
+    if (_isNavigating) return;
+
+    setState(() {
+      _isNavigating = true;
+    });
+
+    // Add a small delay to ensure the UI is responsive
+    await Future.delayed(const Duration(milliseconds: 100));
+
     // Start fade-out animation
-    await _animationController.reverse();
+    try {
+      await _animationController.reverse();
+    } catch (e) {
+      print("Animation error: $e");
+      // Continue with navigation even if animation fails
+    }
 
     if (!mounted) return;
 
     final Widget destinationScreen =
         widget.isSignUp ? const UserDirectionScreen() : const BaseScreen();
 
-    // Use PageRouteBuilder with a custom transition
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder:
-            (context, animation, secondaryAnimation) => destinationScreen,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // Fade in animation for the destination screen
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 300),
-      ),
+    // Directly replace the current screen with the destination
+    // Using MaterialPageRoute to ensure proper context and lifecycle management
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => destinationScreen),
     );
   }
 
@@ -143,9 +151,10 @@ class _SuccessScreenState extends State<SuccessScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: CustomButton(
-        hintText: widget.buttonText,
+        hintText: _isNavigating ? "Loading..." : widget.buttonText,
         isPrimary: true,
-        onPressed: _navigateToMainApp,
+        isLoading: _isNavigating,
+        onPressed: _isNavigating ? null : _navigateToMainApp,
       ),
     );
   }

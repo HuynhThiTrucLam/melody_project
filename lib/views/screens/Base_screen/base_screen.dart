@@ -1,7 +1,9 @@
 import 'package:MELODY/auth/auth_service.dart';
 import 'package:MELODY/core/services/user_service.dart';
 import 'package:MELODY/data/models/BE/user_data.dart';
+import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
 import 'package:MELODY/views/screens/Home_screen/home_screen.dart';
+import 'package:MELODY/views/screens/Introduction_screen/introduction_screen.dart';
 import 'package:MELODY/views/screens/Library_screen/library_screen.dart';
 import 'package:MELODY/views/screens/Membership_screen/member_screen.dart';
 import 'package:MELODY/views/screens/Profile_screen/profile_screen.dart';
@@ -22,11 +24,72 @@ class _BaseScreenState extends State<BaseScreen> {
   int _previousIndex = 2;
   late PageController _pageController;
   final UserService _userService = UserService();
+  final AuthService _authService = AuthService();
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
+
+    // Use Future.microtask to ensure the method runs after the widget is fully built
+    Future.microtask(() => _verifyTokenAndInit());
+  }
+
+  Future<void> _verifyTokenAndInit() async {
+    if (!mounted) return;
+
+    try {
+      // First set loading state
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      final token = await _authService.getToken();
+
+      // Handle no token case
+      if (token == null || token.isEmpty) {
+        print("No valid token found in BaseScreen");
+        if (!mounted) return;
+
+        // Navigate to login screen instead of showing error
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const IntroductionScreen()),
+        );
+        return;
+      }
+
+      // Load user data
+      final userData = await _userService.getUserDataFromToken();
+      if (userData == null && mounted) {
+        setState(() {
+          _errorMessage = "Couldn't load user data. Please try again.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Success case
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error initializing BaseScreen: $e");
+      if (mounted) {
+        setState(() {
+          _errorMessage = "An error occurred. Please try again.";
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _retryLoading() {
+    _verifyTokenAndInit();
   }
 
   @override
@@ -37,6 +100,44 @@ class _BaseScreenState extends State<BaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Show loading or error state
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Loading your music...", style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Show error with retry option
+    if (_errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _errorMessage!,
+                style: const TextStyle(fontSize: 16, color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _retryLoading,
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     // Use a PageView to handle page transitions
     return WillPopScope(
       onWillPop: () async {

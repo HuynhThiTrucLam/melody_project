@@ -8,9 +8,11 @@ import 'package:MELODY/views/screens/Authentication/forgot_password.dart';
 import 'package:MELODY/views/screens/Authentication/phone_sign_in_screen.dart';
 import 'package:MELODY/views/screens/Authentication/sign_up_sceen.dart';
 import 'package:MELODY/views/screens/Authentication/success_screen.dart';
+import 'package:MELODY/views/screens/Base_screen/base_screen.dart';
 import 'package:MELODY/views/screens/Introduction_screen/user_direction_screen.dart';
 import 'package:MELODY/views/widgets/custom_button/custom_button.dart';
 import 'package:MELODY/views/widgets/custom_input/default_input.dart';
+import 'package:MELODY/views/widgets/not_found/not_found.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -258,15 +260,13 @@ class _SignInScreenState extends State<SignInScreen> {
       debugPrint('Login successful: ${_usernameController.text}');
       try {
         print("Attempting navigation to SuccessScreen");
-        Navigation.navigateTo(context, const SuccessScreen(), false);
+
+        Navigation.navigateTo(context, const BaseScreen(), false);
         print("Navigation completed successfully");
       } catch (e) {
         print("Navigation error: $e");
         // Fallback navigation
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SuccessScreen()),
-        );
+        Navigation.navigateTo(context, const NotFound(), false);
       }
     } catch (e) {
       setState(() {
