@@ -32,8 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final MusicService _musicService = MusicService();
 
   List<MusicDisplay> _recommendedSongs = [];
-  // List<MusicData> _trendingSongs = [];
-  // List<ArtistData> _trendingArtists = [];
+  List<ArtistData> _trendingArtists = [];
   // List<MusicData> _featuredAlbums = [];
   bool _isLoading = true;
 
@@ -48,14 +47,19 @@ class _HomeScreenState extends State<HomeScreen> {
       final token = await _authService.getToken();
       print('Token: $token');
       // Load data in parallel to improve performance
-      final results = await Future.wait([
+      final MusicResults = await Future.wait([
         _musicService.getTopTrendingMusicsByRegion("GLOBAL"),
+      ]);
+
+      final ArtistResults = await Future.wait([
+        _musicService.getTopTrendingArtistsByRegion("VN"),
       ]);
 
       if (mounted) {
         setState(() {
-          // Properly assign results and limit to 10 items
-          _recommendedSongs = results[0].take(10).toList();
+          // Properly assign MusicResults and limit to 10 items
+          _recommendedSongs = MusicResults[0].take(10).toList();
+          _trendingArtists = ArtistResults[0].take(10).toList();
           debugPrint("Recommended songs count: ${_recommendedSongs.length}");
           _isLoading = false;
         });
@@ -258,10 +262,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 32),
 
                     // Artists
-                    ArtistCarousel(
-                      artists: ArtistDataList.mockArtists,
-                      title: "Nghệ sĩ nổi bật",
-                    ),
+                    _trendingArtists.isNotEmpty
+                        ? ArtistCarousel(
+                          artists: _trendingArtists,
+                          title: "Nghệ sĩ nổi bật",
+                        )
+                        : Container(), // Don't render if empty
 
                     const SizedBox(height: 32),
 

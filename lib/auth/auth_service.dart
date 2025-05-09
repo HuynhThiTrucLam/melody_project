@@ -15,7 +15,7 @@ class AuthService {
       debugPrint('Signing in with username: $username and password: $password');
       final response = await http.post(
         Uri.parse('$_backendUrl/api/v1/auth/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({'username': username, 'password': password}),
       );
 
@@ -40,7 +40,7 @@ class AuthService {
       );
       final response = await http.post(
         Uri.parse('$_backendUrl/api/v1/auth/register'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({
           'username': username,
           'password': password,

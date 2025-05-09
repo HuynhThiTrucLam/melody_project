@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   // Load environment variables
@@ -25,12 +26,22 @@ class App extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          themeMode: ThemeMode.system,
-          theme: AppTheme.lightTheme,
-          darkTheme: ThemeData(),
-          home: const Scaffold(body: IntroductionScreen()),
-          // home: BaseScreen(),
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: MaterialApp(
+            themeMode: ThemeMode.system,
+            theme: AppTheme.lightTheme,
+            darkTheme: ThemeData(),
+            home: const Scaffold(body: IntroductionScreen()),
+            locale: const Locale('vi', 'VN'),
+            supportedLocales: const [Locale('vi', 'VN'), Locale('en', 'US')],
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            // home: BaseScreen(),
+          ),
         );
       },
     );

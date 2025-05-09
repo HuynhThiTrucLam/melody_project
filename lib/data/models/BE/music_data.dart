@@ -522,3 +522,29 @@ Là-lá-là-la-lá-la-la-là (Sơn Tùng hey hey hu-huh đừng làm trái tim a
     ),
   ];
 }
+
+class MusicSearch {
+  static MusicData fromSpotifyJson(Map<String, dynamic> json) {
+    final data = json['data'];
+    final albumArt =
+        data['albumOfTrack']['coverArt']['sources'].firstWhere(
+          (source) => source['width'] == 640,
+        )['url'];
+    final artist = data['artists']['items'][0]['profile']['name'];
+
+    return MusicData(
+      id: data['id'],
+      name: data['name'],
+      artist: artist,
+      albumArt: albumArt,
+      audioUrl: 'https://example.com/audio/${data['id']}.mp3',
+      lyrics: '',
+      duration: Duration(milliseconds: data['duration']['totalMilliseconds']),
+      listener: 0,
+      isFavorite: false,
+      genre: '',
+      releaseDate: DateTime.now(),
+      nation: 'usuk',
+    );
+  }
+}

@@ -19,7 +19,7 @@ class GoogleAuthService {
           await googleUser.authentication;
       final response = await http.post(
         Uri.parse('$_backendUrl/api/v1/auth/google'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({'id_token': googleAuth.idToken}),
       );
 

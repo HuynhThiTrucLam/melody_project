@@ -39,10 +39,6 @@ class _MusicPlayerState extends State<MusicPlayer>
   final MusicService _musicService = MusicService();
   final AudioPlayerService _audioPlayerService = AudioPlayerService();
 
-  bool _isDownloading = false;
-  double _downloadProgress = 0.0;
-  String? _localAudioPath;
-
   // ScrollController to handle automatic scrolling of lyrics
   final ScrollController _lyricsScrollController = ScrollController();
 
@@ -95,24 +91,14 @@ class _MusicPlayerState extends State<MusicPlayer>
       duration: const Duration(seconds: 20),
     );
 
-    // Initialize timestamped lyrics and check for cached audio
+    // Initialize timestamped lyrics and load audio
     songDetailFuture
         .then((song) async {
           _initTimestampedLyrics(song);
 
-          // Check if audio is already downloaded
-          final cachedPath = await _musicService.getCachedAudioPath(
-            widget.musicId,
-          );
-          if (cachedPath != null) {
-            setState(() {
-              _localAudioPath = cachedPath;
-            });
-            await _audioPlayerService.loadAudio(cachedPath);
-          } else {
-            // Automatically download audio without showing progress
-            _downloadAudioInBackground(song);
-          }
+          // Load audio directly from URL without downloading
+          debugPrint('Loading audio from URL: ${song.audioUrl}');
+          await _audioPlayerService.loadAudio(song.audioUrl);
         })
         .catchError((error) {
           debugPrint('Error initializing lyrics: $error');
@@ -127,45 +113,6 @@ class _MusicPlayerState extends State<MusicPlayer>
     );
   }
 
-  // Download audio file in background
-  Future<void> _downloadAudioInBackground(MusicData song) async {
-    if (_localAudioPath != null || _isDownloading) return;
-
-    // Set downloading flag
-    setState(() {
-      _isDownloading = true;
-    });
-
-    try {
-      final localPath = await _musicService.downloadMusicFile(
-        song.id,
-        song.audioUrl,
-        onProgress: (progress) {
-          // Don't update UI with progress
-          _downloadProgress = progress;
-        },
-      );
-
-      // Update path and load audio when download completes
-      await _audioPlayerService.loadAudio(localPath);
-
-      // Update UI once download is complete
-      if (mounted) {
-        setState(() {
-          _localAudioPath = localPath;
-          _isDownloading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-        });
-      }
-      debugPrint('Error downloading audio: $e');
-    }
-  }
-
   @override
   void dispose() {
     _progressTimer?.cancel();
@@ -175,33 +122,8 @@ class _MusicPlayerState extends State<MusicPlayer>
   }
 
   void startProgress(MusicData song) async {
-    // If audio is already downloaded, play it
-    if (_localAudioPath != null) {
-      _audioPlayerService.play();
-      _rotationController.repeat();
-    } else if (!_isDownloading) {
-      // If not downloaded and not currently downloading, show loading indicator
-      // The download should have already started in initState, but just in case
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(width: 10),
-              Text('Preparing audio...'),
-            ],
-          ),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
+    _audioPlayerService.play();
+    _rotationController.repeat();
   }
 
   void stopProgress() {
@@ -353,19 +275,6 @@ class _MusicPlayerState extends State<MusicPlayer>
     );
   }
 
-  // Build download button or progress indicator
-  Widget _buildDownloadButton(MusicData song) {
-    if (_localAudioPath != null) {
-      return Container(); // Already downloaded
-    }
-
-    if (_isDownloading) {
-      return Container(); // Hide download progress
-    }
-
-    return Container(); // No download button
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<MusicData>(
@@ -392,17 +301,7 @@ class _MusicPlayerState extends State<MusicPlayer>
           );
         }
 
-        // If the audio file is downloading or not yet available, show loading screen
-        if (_isDownloading || (_localAudioPath == null && !_isDownloading)) {
-          // Start the download if it hasn't started yet
-          if (_localAudioPath == null && !_isDownloading) {
-            // Use Future.microtask to avoid calling setState during build
-            Future.microtask(() => _downloadAudioInBackground(song));
-          }
-          return _buildLoadingScreen('Preparing audio...');
-        }
-
-        // Audio is downloaded and ready to play
+        // Audio is ready to play
         final screenHeight = MediaQuery.of(context).size.height;
         final screenWidth = MediaQuery.of(context).size.width;
 
@@ -851,7 +750,7 @@ class _MusicPlayerState extends State<MusicPlayer>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _icon(ImageTheme.heartIcon),
-          _icon(ImageTheme.downloadIcon),
+          // Removed download icon
           IconButton(
             onPressed: () {
               print(" Share button pressed");
