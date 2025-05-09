@@ -26,7 +26,7 @@ class _TopTrendingScreenState extends State<TopTrendingScreen>
   final List<Filter> _filters = [
     Filter(code: "GLOBAL", name: "Tất cả"),
     Filter(code: "VN", name: "Việt Nam"),
-    Filter(code: "US", name: "US/UK"),
+    Filter(code: "USUK", name: "US/UK"),
     Filter(code: "KR", name: "K-Pop"),
   ];
 

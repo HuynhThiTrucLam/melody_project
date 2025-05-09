@@ -33,8 +33,6 @@ target 'Runner' do
 
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
-  pod 'GoogleSignIn', '~> 8.0'
-
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

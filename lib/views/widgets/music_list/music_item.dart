@@ -1,6 +1,7 @@
 import 'package:MELODY/core/utils/music_list_utils/number_format_helper.dart';
 import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
+import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Album_detail_screen/album_detail.dart';
 import 'package:MELODY/views/screens/Music_player/music_player.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +204,7 @@ class MusicListItem extends StatelessWidget {
                   // Title
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: LightTextTheme.headding2.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: LightColorTheme.white,

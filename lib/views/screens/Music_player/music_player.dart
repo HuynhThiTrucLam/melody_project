@@ -1,23 +1,22 @@
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:MELODY/core/services/audio_player_service.dart';
+import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/lyric_line.dart';
+import 'package:MELODY/data/services/music_service.dart';
+import 'package:MELODY/theme/custom_themes/color_theme.dart';
+import 'package:MELODY/theme/custom_themes/image_theme.dart';
+import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Music_player/library_tab.dart';
-import 'package:MELODY/views/widgets/not_found/not_found.dart';
+import 'package:MELODY/views/screens/Notification_screen/notification_screen.dart';
+import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
+import 'package:MELODY/views/widgets/notification/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-
-import 'package:MELODY/data/models/BE/music_data.dart';
-import 'package:MELODY/data/services/music_service.dart';
-import 'package:MELODY/theme/custom_themes/color_theme.dart';
-import 'package:MELODY/theme/custom_themes/image_theme.dart';
-import 'package:MELODY/theme/custom_themes/text_theme.dart';
-import 'package:MELODY/views/screens/Notification_screen/notification_screen.dart';
-import 'package:MELODY/views/widgets/custom_button/goBack_button.dart';
-import 'package:MELODY/views/widgets/notification/notification_button.dart';
 
 class MusicPlayer extends StatefulWidget {
   final String musicId;

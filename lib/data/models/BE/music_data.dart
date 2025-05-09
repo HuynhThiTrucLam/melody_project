@@ -16,9 +16,58 @@ class MusicDisplay {
     required this.listener,
   });
 
+  // Parse a list of Spotify tracks from the API response
+  static List<MusicDisplay> fromSpotifyList(List<dynamic> jsonList) {
+    return jsonList.map((item) => MusicDisplay.fromJson(item)).toList();
+  }
+
   factory MusicDisplay.fromJson(Map<String, dynamic> json) {
-    // Handle different API response formats
-    if (json.containsKey('trackMetadata')) {
+    // Handle the new Spotify API format with data field
+    if (json.containsKey('data')) {
+      final data = json['data'];
+
+      // Extract artists names and join them
+      final artistsList = <String>[];
+      if (data['artists'] != null && data['artists']['items'] is List) {
+        for (var artist in data['artists']['items']) {
+          if (artist['profile'] != null && artist['profile']['name'] != null) {
+            artistsList.add(artist['profile']['name']);
+          }
+        }
+      }
+      final artistsStr = artistsList.join(' x ');
+
+      // Get the highest resolution image URL
+      String imageUrl = '';
+      if (data['albumOfTrack'] != null &&
+          data['albumOfTrack']['coverArt'] != null &&
+          data['albumOfTrack']['coverArt']['sources'] is List &&
+          data['albumOfTrack']['coverArt']['sources'].isNotEmpty) {
+        // Find the largest image (typically the last one in the array)
+        final sources = data['albumOfTrack']['coverArt']['sources'];
+        var maxWidth = 0;
+        for (var source in sources) {
+          if (source['width'] != null && source['width'] > maxWidth) {
+            maxWidth = source['width'];
+            imageUrl = source['url'];
+          }
+        }
+      }
+
+      return MusicDisplay(
+        id: data['id'] ?? '',
+        title: data['name'] ?? '',
+        artists: artistsStr,
+        imageUrl: imageUrl,
+        rank: '0', // Default rank as it's not in the API response
+        listener:
+            data['duration'] != null
+                ? (data['duration']['totalMilliseconds'] ?? 0) ~/ 1000
+                : 0, // Use duration as proxy for listener
+      );
+    }
+    // Handle different API response formats from the previous implementation
+    else if (json.containsKey('trackMetadata')) {
       // Spotify API format
       final trackMetadata = json['trackMetadata'];
       final chartEntryData = json['chartEntryData'];

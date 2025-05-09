@@ -1,4 +1,5 @@
 import 'package:MELODY/auth/auth_service.dart';
+import 'package:MELODY/core/services/user_service.dart';
 import 'package:MELODY/data/models/BE/user_data.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
@@ -19,18 +20,50 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
+  final UserService _userService = UserService();
+  UserData? _userData;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // call getUserInfo in _authService to get user info
-    final user = _authService.getUserInfo();
-    debugPrint('User info: $user');
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (widget.userData != null) {
+      setState(() {
+        _userData = widget.userData;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final userData = await _userService.getUserDataFromToken();
+      debugPrint('User data: $userData');
+      debugPrint('User ID: ${userData?.id}');
+      debugPrint('User Name: ${userData?.name}');
+      debugPrint('User Email: ${userData?.email}');
+      debugPrint('User Phone: ${userData?.phone}');
+      debugPrint('User Membership: ${userData?.membership}');
+      debugPrint('User Address: ${userData?.address}');
+      debugPrint('User Profile Picture: ${userData?.profilePictureUrl}');
+      setState(() {
+        _userData = userData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error fetching user data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void handleSignOut() async {
     await _authService.signOut();
-    // Navigate to the login screen or perform any other action
+    _userService.clearCachedUserData();
     print('User signed out');
     Navigator.pushReplacement(
       context,
@@ -40,6 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.only(top: 20, left: 22, right: 22),
@@ -54,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 30,
                       backgroundImage: AssetImage(
-                        widget.userData?.profilePictureUrl ??
+                        _userData?.profilePictureUrl ??
                             'assets/images/Avatar.png',
                       ),
                     ),
@@ -64,14 +101,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.userData?.name ?? 'User Name',
+                          _userData?.name ?? 'User Name',
                           style: LightTextTheme.headding3.copyWith(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          widget.userData?.name ?? 'UserName@gmail.com',
+                          _userData?.email ?? 'UserName@gmail.com',
                           style: LightTextTheme.paragraph2.copyWith(
                             fontSize: 14,
                             color: LightColorTheme.grey,
@@ -82,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 TagButton(
-                  label: widget.userData?.membership ?? 'Free',
+                  label: _userData?.membership ?? 'Free',
                   backgroundColor: LightColorTheme.black,
                   textColor: LightColorTheme.white,
                   fontWeight: 600,
@@ -92,49 +129,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.headphones,
-                      color: LightColorTheme.grey,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Artist',
-                      style: LightTextTheme.paragraph2.copyWith(
-                        fontSize: 16,
-                        color: LightColorTheme.grey,
-                      ),
-                    ),
-                  ],
-                ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Row(
+            //       crossAxisAlignment: CrossAxisAlignment.center,
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: [
+            //         Icon(
+            //           Icons.headphones,
+            //           color: LightColorTheme.grey,
+            //           size: 16,
+            //         ),
+            //         const SizedBox(width: 4),
+            //         Text(
+            //           'Artist',
+            //           style: LightTextTheme.paragraph2.copyWith(
+            //             fontSize: 16,
+            //             color: LightColorTheme.grey,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
 
-                //Toggle Button
-                Switch(
-                  value: true,
-                  activeColor: Colors.black, // Active color of the thumb
-                  inactiveThumbColor: Colors.white, // Inactive thumb color
-                  inactiveTrackColor:
-                      Colors.grey.shade300, // Inactive track color
-                  activeTrackColor: Colors.green, // Active track color
-                  onChanged: (bool value) {
-                    setState(() {
-                      false;
-                    });
-                  },
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  // trackBorderColor: MaterialStateProperty.all(
-                  //   Colors.grey.shade300,
-                  // ), // Track border color
-                ),
-              ],
-            ),
+            //     //Toggle Button
+            //     Switch(
+            //       value: true,
+            //       activeColor: Colors.black, // Active color of the thumb
+            //       inactiveThumbColor: Colors.white, // Inactive thumb color
+            //       inactiveTrackColor:
+            //           Colors.grey.shade300, // Inactive track color
+            //       activeTrackColor: Colors.green, // Active track color
+            //       onChanged: (bool value) {
+            //         setState(() {
+            //           false;
+            //         });
+            //       },
+            //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            //       // trackBorderColor: MaterialStateProperty.all(
+            //       //   Colors.grey.shade300,
+            //       // ), // Track border color
+            //     ),
+            //   ],
+            // ),
             Divider(
               color: LightColorTheme.grey.withOpacity(0.5),
               thickness: 0.25,
@@ -234,6 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               thickness: 0.25,
               height: 20,
             ),
+            const SizedBox(height: 16),
 
             // Logout Button
             CustomButton(

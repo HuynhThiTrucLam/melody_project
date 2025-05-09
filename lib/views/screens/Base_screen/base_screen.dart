@@ -1,3 +1,6 @@
+import 'package:MELODY/auth/auth_service.dart';
+import 'package:MELODY/core/services/user_service.dart';
+import 'package:MELODY/data/models/BE/user_data.dart';
 import 'package:MELODY/views/screens/Home_screen/home_screen.dart';
 import 'package:MELODY/views/screens/Library_screen/library_screen.dart';
 import 'package:MELODY/views/screens/Membership_screen/member_screen.dart';
@@ -18,6 +21,7 @@ class _BaseScreenState extends State<BaseScreen> {
   int _currentIndex = 2; // default to "Home" in center
   int _previousIndex = 2;
   late PageController _pageController;
+  final UserService _userService = UserService();
 
   @override
   void initState() {
@@ -47,14 +51,6 @@ class _BaseScreenState extends State<BaseScreen> {
       child: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
-        // onPageChanged: (index) {
-        //   setState(() {
-        //     _previousIndex = _currentIndex;
-        //     _currentIndex = index;
-        //     print("previous index: $_previousIndex");
-        //     print("current index: $_currentIndex");
-        //   });
-        // },
         children: [
           BaseLayout(
             child: const LibraryScreen(),
@@ -89,9 +85,8 @@ class _BaseScreenState extends State<BaseScreen> {
             onBack: () => _handleBack(context),
           ),
           BaseLayout(
-            child: const ProfileScreen(),
+            child: ProfileScreen(),
             isHeader: true,
-            showBottomNav: false,
             headerTitle: "Tài khoản",
             currentIndex: _currentIndex,
             onNavigationTap: _onNavigationTap,

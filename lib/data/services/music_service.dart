@@ -113,12 +113,14 @@ class MusicService {
       // Get the token from AuthService
       final token = await _authService.getToken();
       debugPrint(
-        '$_backendUrl/api/v1/music/top-trending?country=$region&period=daily',
+        // '$_backendUrl/api/v1/music/top-trending?country=$region&period=daily',
+        '$_backendUrl/api/v1/music/popular-songs?country=$region',
       );
 
       final response = await http.get(
         Uri.parse(
-          '$_backendUrl/api/v1/music/top-trending?country=$region&period=daily',
+          // '$_backendUrl/api/v1/music/top-trending?country=$region&period=daily',
+          '$_backendUrl/api/v1/music/popular-songs?country=$region',
         ),
         headers: {
           'Content-Type': 'application/json',
@@ -132,15 +134,20 @@ class MusicService {
         final data = jsonDecode(response.body);
         final List<MusicDisplay> musicList = [];
 
-        // The response has 'tracks' instead of 'data'
-        if (data.containsKey('tracks')) {
+        // Check if response is an array (new Spotify API format)
+        if (data is List) {
+          // Use the utility method we created for parsing Spotify lists
+          return MusicDisplay.fromSpotifyList(data);
+        }
+        // Check if response has 'tracks' property (old format)
+        else if (data is Map && data.containsKey('tracks')) {
           for (var item in data['tracks']) {
             musicList.add(MusicDisplay.fromJson(item));
           }
           debugPrint('musicList: $musicList');
           return musicList;
         } else {
-          debugPrint('Response does not contain tracks array');
+          debugPrint('Unrecognized response format');
           return [];
         }
       } else {
