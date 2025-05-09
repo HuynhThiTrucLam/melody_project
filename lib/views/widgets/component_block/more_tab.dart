@@ -1,6 +1,7 @@
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
+import 'package:MELODY/views/screens/Music_player/music_player.dart';
 import 'package:MELODY/views/widgets/component_block/component_block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,7 +63,15 @@ class _MoreTabState extends State<MoreTab> {
           const SizedBox(height: 24),
           GestureDetector(
             onTap: () {
-              print('Play music');
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder:
+                      (context, animation, secondaryAnimation) =>
+                          MusicPlayer(musicId: widget.id!),
+                  transitionDuration: const Duration(milliseconds: 600),
+                ),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 14, bottom: 14),

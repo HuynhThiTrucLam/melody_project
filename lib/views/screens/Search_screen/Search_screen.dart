@@ -1,12 +1,16 @@
+import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/tag_data.dart';
+import 'package:MELODY/data/services/search_service.dart';
 import 'package:MELODY/theme/custom_themes/color_theme.dart';
 import 'package:MELODY/theme/custom_themes/image_theme.dart';
 import 'package:MELODY/theme/custom_themes/text_theme.dart';
 import 'package:MELODY/views/screens/Notification_screen/notification_screen.dart';
+import 'package:MELODY/views/widgets/component_block/component_block.dart';
 import 'package:MELODY/views/widgets/layout/base_layout.dart';
 import 'package:MELODY/views/widgets/tag_button/tag_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:async';
 
 class SearchScreen extends StatefulWidget {
   final String initialQuery;
@@ -21,7 +25,8 @@ class _SearchScreenState extends State<SearchScreen> {
   late TextEditingController searchController;
   late String searchQuery;
   final FocusNode searchFocusNode = FocusNode();
-  final List<String> searchResults = [];
+  final List<MusicData> searchResults = [];
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -38,18 +43,27 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void performSearch(String query) {
-    setState(() {
-      searchQuery = query;
-      searchResults.clear();
+    // Cancel any existing timer
+    _debounceTimer?.cancel();
 
-      if (query.isNotEmpty) {
-        searchResults.addAll([
-          'Result 1 for "$query"',
-          'Result 2 for "$query"',
-          'Result 3 for "$query"',
-          'Result 4 for "$query"',
-        ]);
-      }
+    // Set a new timer to delay the search
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+
+      setState(() {
+        searchQuery = query;
+        searchResults.clear();
+
+        if (query.isNotEmpty) {
+          SearchService().searchMusic(query).then((value) {
+            if (mounted) {
+              setState(() {
+                searchResults.addAll(value);
+              });
+            }
+          });
+        }
+      });
     });
   }
 
@@ -57,6 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     searchFocusNode.dispose();
     searchController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -172,11 +187,21 @@ class _SearchScreenState extends State<SearchScreen> {
                                   key: const ValueKey('results'),
                                   itemCount: searchResults.length,
                                   itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(searchResults[index]),
-                                      leading: const Icon(Icons.music_note),
-                                      onTap: () {
-                                        // TODO: Navigate to the result
+                                    return BlockItem(
+                                      no: index + 1,
+                                      id: searchResults[index].id,
+                                      showNo: false,
+                                      imageUrl: searchResults[index].albumArt,
+                                      title: searchResults[index].name,
+                                      subtext: searchResults[index].listener,
+                                      shapeOfImage: 'circle',
+                                      showButton: false,
+                                      showInfor: true,
+                                      onButtonPressed: () {
+                                        print('Button clicked');
+                                      },
+                                      onInfoPressed: () {
+                                        print('More info clicked');
                                       },
                                     );
                                   },
