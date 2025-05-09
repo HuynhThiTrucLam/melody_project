@@ -17,7 +17,10 @@ class MusicService {
     final token = await _authService.getToken();
     final response = await http.get(
       Uri.parse('$_backendUrl/api/v1/music/get-detail/$id'),
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -62,7 +65,10 @@ class MusicService {
       final token = await _authService.getToken();
       final response = await http.get(
         Uri.parse('$_backendUrl/api/v1/music/get-previous/$currentId'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -87,7 +93,10 @@ class MusicService {
       final token = await _authService.getToken();
       final response = await http.get(
         Uri.parse('$_backendUrl/api/v1/music/get-next/$currentId'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -123,7 +132,7 @@ class MusicService {
           '$_backendUrl/api/v1/music/popular-songs?country=$region',
         ),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
       );
