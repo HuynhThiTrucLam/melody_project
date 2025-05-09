@@ -21,7 +21,10 @@ class _ArtistCarouselState extends State<ArtistCarousel> {
   int activeIndex = 0;
   final controller = carousel.CarouselSliderController();
 
-  int get dotCount => (widget.artists.length / 2).ceil(); // 2 item / page
+  int get dotCount =>
+      widget.artists.isEmpty
+          ? 0
+          : (widget.artists.length / 2).ceil(); // 2 item / page
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +36,21 @@ class _ArtistCarouselState extends State<ArtistCarousel> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title, style: LightTextTheme.headding2),
-            AnimatedSmoothIndicator(
-              activeIndex: activeIndex,
-              count: dotCount,
-              onDotClicked: (dotIndex) {
-                controller.animateToPage(dotIndex * 2);
-              },
-              effect: WormEffect(
-                dotWidth: 6,
-                dotHeight: 6,
-                dotColor: const Color(0xFFE0D1D1),
-                activeDotColor: Colors.black,
-              ),
-            ),
+            dotCount > 0
+                ? AnimatedSmoothIndicator(
+                  activeIndex: activeIndex,
+                  count: dotCount,
+                  onDotClicked: (dotIndex) {
+                    controller.animateToPage(dotIndex * 2);
+                  },
+                  effect: WormEffect(
+                    dotWidth: 6,
+                    dotHeight: 6,
+                    dotColor: const Color(0xFFE0D1D1),
+                    activeDotColor: Colors.black,
+                  ),
+                )
+                : Container(),
           ],
         ),
 

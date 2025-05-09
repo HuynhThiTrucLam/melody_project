@@ -27,6 +27,28 @@ class ArtistData {
     required this.songs,
     required this.albums,
   });
+  factory ArtistData.fromJson(Map<String, dynamic> json) {
+    return ArtistData(
+      id: json['id'],
+      name: json['name'],
+      avatarUrl: json['images']?[0]?['url'] ?? json['avatarUrl'] ?? '',
+      isVerified: json['isVerified'] ?? true,
+      followers: json['followers']?['total'] ?? json['followers'] ?? 0,
+      listeners: json['popularity'] ?? json['listeners'] ?? 0,
+      comeFrom: Filter(
+        code: json['comeFrom'] ?? 'global',
+        name: json['comeFrom'] ?? 'Global',
+      ),
+      isFollowed: json['isFollowed'] ?? false,
+      description: json['description'],
+      songs: json['songs'] ?? [],
+      albums: json['albums'] ?? [],
+    );
+  }
+
+  static List<ArtistData> fromSpotifyList(List<dynamic> spotifyList) {
+    return spotifyList.map((item) => ArtistData.fromJson(item)).toList();
+  }
 }
 
 class ArtistDataList {

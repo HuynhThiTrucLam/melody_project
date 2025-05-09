@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:MELODY/auth/auth_service.dart';
 import 'package:MELODY/config/env_config.dart';
 import 'package:MELODY/core/services/audio_download_service.dart';
+import 'package:MELODY/data/models/BE/artist_data.dart';
 import 'package:MELODY/data/models/BE/music_data.dart';
 import 'package:MELODY/data/models/UI/music_display.dart';
 import 'package:flutter/widgets.dart';
@@ -209,5 +210,50 @@ class MusicService {
   // Clear audio cache
   Future<void> clearAudioCache() async {
     await _audioDownloadService.clearCache();
+  }
+
+  Future<List<ArtistData>> getTopTrendingArtistsByRegion(String region) async {
+    try {
+      debugPrint('Fetching trending artists by region: $region');
+
+      // Get the token from AuthService
+      final token = await _authService.getToken();
+      final response = await http.get(
+        Uri.parse('$_backendUrl/api/v1/artist/popular/$region'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<ArtistData> artistList = [];
+
+        // Check if response is an array (new Spotify API format)
+        if (data is List) {
+          return ArtistData.fromSpotifyList(data);
+        }
+        // Check if response has 'tracks' property (old format)
+        else if (data is Map && data.containsKey('tracks')) {
+          for (var item in data['tracks']) {
+            artistList.add(ArtistData.fromJson(item));
+          }
+          debugPrint('artistList: $artistList');
+          return artistList;
+        } else {
+          debugPrint('Unrecognized response format');
+          return [];
+        }
+      } else {
+        // Handle error response
+        debugPrint('Error fetching trending artists: ${response.body}');
+        return [];
+      }
+    } catch (e) {
+      // Handle exceptions (network issues, parsing errors, etc.)
+      print('Error fetching trending artists: $e');
+      return [];
+    }
   }
 }
